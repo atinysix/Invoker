@@ -2,8 +2,8 @@ package com.daiwj.invoker.demo.okhttp;
 
 import com.daiwj.invoker.demo.okhttp.extra.TestHttpCodeInterceptor;
 import com.daiwj.invoker.runtime.Callback;
-import com.daiwj.invoker.runtime.Failure;
-import com.daiwj.invoker.runtime.Success;
+import com.daiwj.invoker.runtime.FailureResult;
+import com.daiwj.invoker.runtime.SuccessResult;
 
 /**
  * author: daiwj on 2020/12/5 15:23
@@ -13,12 +13,12 @@ public class TestCallback<Data> implements Callback<Data, TestFailure> {
     private TestHttpCodeInterceptor mInterceptor = new TestHttpCodeInterceptor();
 
     @Override
-    public void onSuccess(Success<Data> result) {
+    public void onSuccess(SuccessResult<Data> result) {
         onSuccessful(result.getData());
     }
 
     @Override
-    public final void onFailure(Failure<TestFailure> result) {
+    public final void onFailure(FailureResult<TestFailure> result) {
         final TestFailure failure = result.getFailure();
         if (failure.isError()) {
             onError((TestError) failure);

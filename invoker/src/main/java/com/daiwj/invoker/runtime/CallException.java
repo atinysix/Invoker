@@ -7,14 +7,14 @@ public final class CallException extends Exception {
 
     private static final long serialVersionUID = 3232880574229389304L;
 
-    private Failure<?> mFailure;
+    private FailureResult<?> mFailure;
 
-    public CallException(Failure<?> failure) {
+    public CallException(FailureResult<?> failure) {
         super();
         mFailure = failure;
     }
 
-    public Failure<?> getFailure() {
+    public FailureResult<?> getFailure() {
         return mFailure;
     }
 }

@@ -5,8 +5,8 @@ package com.daiwj.invoker.runtime;
  */
 public interface Callback<Data, F extends IFailure> {
 
-    void onSuccess(Success<Data> result);
+    void onSuccess(SuccessResult<Data> result);
 
-    void onFailure(Failure<F> result);
+    void onFailure(FailureResult<F> result);
 
 }

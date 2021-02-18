@@ -11,7 +11,7 @@ public interface Call<Data> {
 
     void call(Callback<Data, ?> callback);
 
-    Success<Data> callSync() throws CallException;
+    SuccessResult<Data> callSync() throws CallException;
 
     void cancel();
 

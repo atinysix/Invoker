@@ -17,7 +17,7 @@ public class UiThreadCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void executeSuccess(Callback c, Success<?> success) {
+    public void executeSuccess(Callback c, SuccessResult<?> success) {
         mPoster.post(new Runnable() {
             @Override
             public void run() {
@@ -27,7 +27,7 @@ public class UiThreadCallbackExecutor implements CallbackExecutor {
     }
 
     @Override
-    public void executeFailure(Callback c, Failure<?> failure) {
+    public void executeFailure(Callback c, FailureResult<?> failure) {
         mPoster.post(new Runnable() {
             @Override
             public void run() {

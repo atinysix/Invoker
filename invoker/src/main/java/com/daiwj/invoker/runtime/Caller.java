@@ -29,7 +29,7 @@ public interface Caller<Data> {
 
     <F extends IFailure> void call(Fragment fragment, Callback<Data, F> callback);
 
-    Success<Data> callSync() throws CallException;
+    SuccessResult<Data> callSync() throws CallException;
 
     void cancel();
 

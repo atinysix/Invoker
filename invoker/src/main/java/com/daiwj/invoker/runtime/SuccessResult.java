@@ -3,14 +3,14 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 1/16/21 21:53
  */
-public class Success<Data> extends Result {
+public class SuccessResult<Data> extends Result {
     private Data mData;
 
-    public Success(Caller<?> caller) {
+    public SuccessResult(Caller<?> caller) {
         super(caller);
     }
 
-    public Success(Result result) {
+    public SuccessResult(Result result) {
         super(result);
     }
 

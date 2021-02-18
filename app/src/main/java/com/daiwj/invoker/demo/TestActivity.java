@@ -9,7 +9,7 @@ import com.daiwj.invoker.Invoker;
 import com.daiwj.invoker.demo.okhttp.TestCallback;
 import com.daiwj.invoker.demo.okhttp.TestError;
 import com.daiwj.invoker.demo.okhttp.TestFailure;
-import com.daiwj.invoker.runtime.Success;
+import com.daiwj.invoker.runtime.SuccessResult;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class TestActivity extends Activity {
                         .mock(Test.success())
                         .call(getActivity(), new TestCallback<String>() {
                             @Override
-                            public void onSuccess(Success<String> result) {
+                            public void onSuccess(SuccessResult<String> result) {
                                 toast(result.getData());
                             }
 
@@ -55,7 +55,7 @@ public class TestActivity extends Activity {
                         .mock(Test.success())
                         .call(getActivity(), new TestCallback<TestInfo>() {
                             @Override
-                            public void onSuccess(Success<TestInfo> result) {
+                            public void onSuccess(SuccessResult<TestInfo> result) {
                                 toast(result.getData().toString());
                             }
 
@@ -80,7 +80,7 @@ public class TestActivity extends Activity {
                         .mock(Test.successList())
                         .call(getActivity(), new TestCallback<List<String>>() {
                             @Override
-                            public void onSuccess(Success<List<String>> result) {
+                            public void onSuccess(SuccessResult<List<String>> result) {
                                 toast(result.getData().toString());
                             }
 

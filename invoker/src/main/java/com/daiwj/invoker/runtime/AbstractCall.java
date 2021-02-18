@@ -45,12 +45,12 @@ public abstract class AbstractCall<Data> implements Call<Data> {
         mCaller.getClient().getCallbackExecutor().execute(r);
     }
 
-    protected final void executeSuccess(Callback<?, ?> c, Success<?> success) {
-        mCaller.getClient().getCallbackExecutor().executeSuccess(c, success);
+    protected final void executeSuccess(Callback<?, ?> c, SuccessResult<?> result) {
+        mCaller.getClient().getCallbackExecutor().executeSuccess(c, result);
     }
 
-    protected final void executeFailure(Callback<?, ?> c, Failure<?> failure) {
-        mCaller.getClient().getCallbackExecutor().executeFailure(c, failure);
+    protected final void executeFailure(Callback<?, ?> c, FailureResult<?> result) {
+        mCaller.getClient().getCallbackExecutor().executeFailure(c, result);
     }
 
 }

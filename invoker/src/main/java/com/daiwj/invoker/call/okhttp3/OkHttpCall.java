@@ -5,9 +5,9 @@ import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.AbstractCall;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.Caller;
-import com.daiwj.invoker.runtime.Failure;
+import com.daiwj.invoker.runtime.FailureResult;
 import com.daiwj.invoker.runtime.Result;
-import com.daiwj.invoker.runtime.Success;
+import com.daiwj.invoker.runtime.SuccessResult;
 import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.FilePart;
 import com.daiwj.invoker.runtime.MethodVisitor;
@@ -76,7 +76,7 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
                 }
 
                 try {
-                    final Success<Data> success = new Success<Data>(caller);
+                    final SuccessResult<Data> success = new SuccessResult<Data>(caller);
                     if (caller.getClient().isDebug()) {
                         success.setResponse(new OkHttpResponse(response, caller.getMocker()));
                     } else {
@@ -104,14 +104,14 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
     }
 
     @Override
-    public final Success<Data> callSync() throws CallException {
+    public final SuccessResult<Data> callSync() throws CallException {
         final Caller<Data> caller = getCaller();
 
         try {
             mCall = mOkHttpClient.newCall(onResolveOriginRequest(makeOriginRequest()));
             final Response response = mCall.execute();
 
-            final Success<Data> success = new Success<>(caller);
+            final SuccessResult<Data> success = new SuccessResult<>(caller);
             if (caller.getClient().isDebug()) {
                 success.setResponse(new OkHttpResponse(response, caller.getMocker()));
             } else {
@@ -252,8 +252,8 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
 
     protected abstract void parseFailure(Callback<Data, ?> c, Result result, Exception e);
 
-    protected abstract Success<Data> parseSuccessSync(Result result) throws CallException;
+    protected abstract SuccessResult<Data> parseSuccessSync(Result result) throws CallException;
 
-    protected abstract Failure<?> parseFailureSync(Result result, Exception e);
+    protected abstract FailureResult<?> parseFailureSync(Result result, Exception e);
 
 }

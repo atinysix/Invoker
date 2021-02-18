@@ -7,8 +7,8 @@ public interface CallbackExecutor {
 
     void execute(Runnable r);
 
-    void executeSuccess(Callback c, Success<?> success);
+    void executeSuccess(Callback c, SuccessResult<?> success);
 
-    void executeFailure(Callback c, Failure<?> failure);
+    void executeFailure(Callback c, FailureResult<?> failure);
 
 }

@@ -4,9 +4,9 @@ import com.daiwj.invoker.call.okhttp3.OkHttpCall;
 import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.Caller;
-import com.daiwj.invoker.runtime.Failure;
+import com.daiwj.invoker.runtime.FailureResult;
 import com.daiwj.invoker.runtime.Result;
-import com.daiwj.invoker.runtime.Success;
+import com.daiwj.invoker.runtime.SuccessResult;
 import com.daiwj.invoker.runtime.SourceConverter;
 
 import okhttp3.OkHttpClient;
@@ -30,11 +30,11 @@ public class TestOkHttpCall<Data> extends OkHttpCall<Data> {
     protected final void parseSuccess(Callback<Data, ?> c, Result result) {
         final TestSource source = mSourceConverter.convert(result.getResponse().getContent());
         if (source.isSuccessful()) {
-            final Success<Data> success = new Success<>(result);
+            final SuccessResult<Data> success = new SuccessResult<>(result);
             success.setData(parseData(source.data()));
             executeSuccess(c, success);
         } else {
-            final Failure<TestFailure> failure = new Failure<>(result);
+            final FailureResult<TestFailure> failure = new FailureResult<>(result);
             failure.setFailure(mFailureFactory.create(source));
             executeFailure(c, failure);
         }
@@ -42,28 +42,28 @@ public class TestOkHttpCall<Data> extends OkHttpCall<Data> {
 
     @Override
     protected final void parseFailure(Callback<Data, ?> c, Result result, Exception e) {
-        final Failure<TestFailure> failure = new Failure<>(result);
+        final FailureResult<TestFailure> failure = new FailureResult<>(result);
         failure.setFailure(mFailureFactory.create(e));
         executeFailure(c, failure);
     }
 
     @Override
-    protected final Success<Data> parseSuccessSync(Result result) throws CallException {
+    protected final SuccessResult<Data> parseSuccessSync(Result result) throws CallException {
         final TestSource source = mSourceConverter.convert(result.getResponse().getContent());
         if (source.isSuccessful()) {
-            final Success<Data> success = new Success<>(result);
+            final SuccessResult<Data> success = new SuccessResult<>(result);
             success.setData(parseData(source.data()));
             return success;
         } else {
-            final Failure<TestFailure> failure = new Failure<>(result);
+            final FailureResult<TestFailure> failure = new FailureResult<>(result);
             failure.setFailure(mFailureFactory.create(source));
             throw new CallException(failure);
         }
     }
 
     @Override
-    protected final Failure<?> parseFailureSync(Result result, Exception e) {
-        final Failure<TestFailure> failure = new Failure<>(result);
+    protected final FailureResult<?> parseFailureSync(Result result, Exception e) {
+        final FailureResult<TestFailure> failure = new FailureResult<>(result);
         failure.setFailure(mFailureFactory.create(e));
         return failure;
     }

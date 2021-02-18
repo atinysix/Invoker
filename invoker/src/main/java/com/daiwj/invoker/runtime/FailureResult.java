@@ -5,14 +5,14 @@ import androidx.annotation.Nullable;
 /**
  * author: daiwj on 1/16/21 21:53
  */
-public class Failure<F extends IFailure> extends Result {
+public class FailureResult<F extends IFailure> extends Result {
     private F mFailure;
 
-    public Failure(Caller<?> caller) {
+    public FailureResult(Caller<?> caller) {
         super(caller);
     }
 
-    public Failure(Result result) {
+    public FailureResult(Result result) {
         super(result);
     }
 

@@ -25,8 +25,7 @@ public class OkHttpResponse implements Response {
             mContent = mocker.getContent();
         } else {
             try {
-                ResponseBody body = mResponse.body();
-                mContent = body.string();
+                mContent = mResponse.body().string();
             } catch (IOException e) {
                 e.printStackTrace();
             }

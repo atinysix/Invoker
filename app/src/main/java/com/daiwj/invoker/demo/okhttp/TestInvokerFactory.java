@@ -95,8 +95,8 @@ public class TestInvokerFactory implements InvokerFactory {
                 .baseUrl("https://apigw.myzebravip.com/")
                 .callFactory(mCallFactory) // call实体
                 .sourceConverter(mSourceConverter) // response层数据
-                .failureFactory(new TestFailureFactory()) // 失败情况
                 .parserFactory(new FastJsonParserFactory()) // data层数据
+                .failureFactory(new TestFailureFactory()) // failure数据
                 .debug(BuildConfig.DEBUG)
                 .build();
     }

@@ -3,8 +3,6 @@ package com.daiwj.invoker.call.okhttp3;
 import com.daiwj.invoker.runtime.IResponse;
 import com.daiwj.invoker.runtime.Mocker;
 
-import java.io.IOException;
-
 import okhttp3.ResponseBody;
 
 /**

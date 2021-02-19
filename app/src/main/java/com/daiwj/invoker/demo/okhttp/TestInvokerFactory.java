@@ -92,7 +92,7 @@ public class TestInvokerFactory implements InvokerFactory {
         };
 
         return new Invoker.Builder()
-                .baseUrl("https://apigw.myzebravip.com/")
+                .baseUrl("https://www.baidu.com/")
                 .callFactory(mCallFactory) // call实体
                 .sourceConverter(mSourceConverter) // response层数据
                 .parserFactory(new FastJsonParserFactory()) // data层数据

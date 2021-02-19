@@ -6,10 +6,12 @@ import com.daiwj.invoker.demo.BuildConfig;
 import com.daiwj.invoker.demo.okhttp.extra.TestLogInterceptor;
 import com.daiwj.invoker.demo.okhttp.extra.TestRequestInterceptor;
 import com.daiwj.invoker.parser.FastJsonParserFactory;
+import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.Caller;
 import com.daiwj.invoker.runtime.InvokerFactory;
 import com.daiwj.invoker.runtime.SourceConverter;
+import com.google.gson.Gson;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -95,7 +97,7 @@ public class TestInvokerFactory implements InvokerFactory {
                 .baseUrl("https://www.baidu.com/")
                 .callFactory(mCallFactory) // call实体
                 .sourceConverter(mSourceConverter) // response层数据
-                .parserFactory(new FastJsonParserFactory()) // data层数据
+                .parserFactory(new GsonParserFactory()) // data层数据
                 .failureFactory(new TestFailureFactory()) // failure数据
                 .debug(BuildConfig.DEBUG)
                 .build();

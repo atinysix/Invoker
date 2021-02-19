@@ -33,7 +33,7 @@ interface TestApi {
 
     @Header(name = "invoker-user-agent", value = "Invoker")
     @Post("platform/api/stringListCall")
-    DataCaller<List<String>> stringListCall(
+    DataCaller<List<TestInfo>> listCall(
             @Param("name") String name,
             @Param("password") String password
     );

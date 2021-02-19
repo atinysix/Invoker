@@ -55,11 +55,11 @@ public class TestFragmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Invoker.invoke(TestApi.class)
-                        .stringListCall("MeepoKing", "123456")
+                        .listCall("MeepoKing", "123456")
                         .mock(Test.successList())
-                        .call(getActivity(), new TestCallback<List<String>>() {
+                        .call(getActivity(), new TestCallback<List<TestInfo>>() {
                             @Override
-                            public void onSuccess(SuccessResult<List<String>> result) {
+                            public void onSuccess(SuccessResult<List<TestInfo>> result) {
                                 toast(result.getData().toString());
                             }
                         });

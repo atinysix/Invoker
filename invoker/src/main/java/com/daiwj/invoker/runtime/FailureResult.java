@@ -18,7 +18,7 @@ public class FailureResult<F extends IFailure> extends Result {
 
     @Nullable
     @Override
-    public Response getResponse() {
+    public IResponse getResponse() {
         return super.getResponse();
     }
 

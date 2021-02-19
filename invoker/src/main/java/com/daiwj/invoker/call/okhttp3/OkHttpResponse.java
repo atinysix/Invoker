@@ -1,6 +1,6 @@
 package com.daiwj.invoker.call.okhttp3;
 
-import com.daiwj.invoker.runtime.Response;
+import com.daiwj.invoker.runtime.IResponse;
 import com.daiwj.invoker.runtime.Mocker;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import okhttp3.ResponseBody;
 /**
  * author: daiwj on 2/3/21 14:23
  */
-public class OkHttpResponse implements Response {
+public class OkHttpResponse implements IResponse {
     private okhttp3.Response mResponse;
     private String mContent;
 
@@ -24,10 +24,16 @@ public class OkHttpResponse implements Response {
         if (mocker != null) {
             mContent = mocker.getContent();
         } else {
+            ResponseBody body = null;
             try {
-                mContent = mResponse.body().string();
-            } catch (IOException e) {
+                body = mResponse.body();
+                mContent = body.string();
+            } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                if (body != null) {
+                    body.close();
+                }
             }
         }
     }

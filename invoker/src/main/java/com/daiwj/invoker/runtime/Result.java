@@ -5,7 +5,7 @@ package com.daiwj.invoker.runtime;
  */
 public class Result {
     private Caller<?> mCaller;
-    private Response mResponse;
+    private IResponse mResponse;
 
     public Result(Caller<?> caller) {
         mCaller = caller;
@@ -20,11 +20,11 @@ public class Result {
         return (Caller<Data>) mCaller;
     }
 
-    public Response getResponse() {
+    public IResponse getResponse() {
         return mResponse;
     }
 
-    public void setResponse(Response response) {
+    public void setResponse(IResponse response) {
         mResponse = response;
     }
 }

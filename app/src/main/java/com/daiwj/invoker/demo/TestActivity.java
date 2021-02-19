@@ -24,7 +24,7 @@ public class TestActivity extends Activity {
         findViewById(R.id.btn_test_SourceCaller).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Invoker.provide(TestApi.class)
+                Invoker.invoke(TestApi.class)
                         .sourceCall("MeepoKing", "123456")
                         .asDynamic()
                         .mock(Test.success())
@@ -50,7 +50,7 @@ public class TestActivity extends Activity {
         findViewById(R.id.btn_test_DataCaller_TestInfo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Invoker.provide(TestApi.class)
+                Invoker.invoke(TestApi.class)
                         .dataCall("MeepoKing", "123456")
                         .mock(Test.success())
                         .call(getActivity(), new TestCallback<TestInfo>() {
@@ -75,7 +75,7 @@ public class TestActivity extends Activity {
         findViewById(R.id.btn_test_DataCaller_List).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Invoker.provide(TestApi.class)
+                Invoker.invoke(TestApi.class)
                         .stringListCall("MeepoKing", "123456")
                         .mock(Test.successList())
                         .call(getActivity(), new TestCallback<List<String>>() {

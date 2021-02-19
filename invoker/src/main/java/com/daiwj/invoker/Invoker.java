@@ -49,7 +49,7 @@ public final class Invoker {
 
     private LifecycleOwnerManager mOwnerManager = new LifecycleOwnerManager();
 
-    public static <T> T provide(Class<T> c) {
+    public static <T> T invoke(Class<T> c) {
         if (!c.isInterface()) {
             InvokerUtil.error("cannot provide invoker api for a class type: " + c.getCanonicalName());
         }

@@ -238,16 +238,6 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
         mCall.cancel();
     }
 
-    @Override
-    public final boolean isCanceled() {
-        return getCaller().isCanceled();
-    }
-
-    @Override
-    public final void finish() {
-        getCaller().finish();
-    }
-
     protected abstract void parseSuccess(Callback<Data, ?> c, Result result);
 
     protected abstract void parseFailure(Callback<Data, ?> c, Result result, Exception e);

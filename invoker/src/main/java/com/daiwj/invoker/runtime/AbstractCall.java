@@ -22,6 +22,16 @@ public abstract class AbstractCall<Data> implements Call<Data> {
     }
 
     @Override
+    public final boolean isCanceled() {
+        return mCaller.isCanceled();
+    }
+
+    @Override
+    public final void finish() {
+        mCaller.finish();
+    }
+
+    @Override
     public SourceConverter<? extends ISource> getSourceConverter() {
         return mCaller.getClient().getSourceConverter();
     }

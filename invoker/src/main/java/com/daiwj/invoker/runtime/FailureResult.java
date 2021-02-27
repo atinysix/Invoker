@@ -9,10 +9,6 @@ public class FailureResult<F extends IFailure> extends Result {
 
     private F mFailure;
 
-    public FailureResult(Caller<?> caller) {
-        super(caller);
-    }
-
     public FailureResult(Result result, F failure) {
         super(result);
         mFailure = failure;
@@ -26,10 +22,6 @@ public class FailureResult<F extends IFailure> extends Result {
 
     public F getFailure() {
         return mFailure;
-    }
-
-    public void setFailure(F failure) {
-        mFailure = failure;
     }
 
 }

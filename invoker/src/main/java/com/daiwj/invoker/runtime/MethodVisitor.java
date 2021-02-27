@@ -76,14 +76,14 @@ public final class MethodVisitor<Data> {
         for (Annotation a : mMethodAnnotations) {
             if (a instanceof Host) {
                 IMethodAnnotationHandler.HOST.handle(a, this);
-            } else if (a instanceof SourceFactory) {
-                IMethodAnnotationHandler.SOURCE.handle(a, this);
             } else if (a instanceof Get) {
                 IMethodAnnotationHandler.GET.handle(a, this);
             } else if (a instanceof Post) {
                 IMethodAnnotationHandler.POST.handle(a, this);
             } else if (a instanceof Header) {
                 IMethodAnnotationHandler.HEADER.handle(a, this);
+            } else if (a instanceof SourceFactory) {
+                IMethodAnnotationHandler.SOURCE.handle(a, this);
             } else if (a instanceof CallFactory) {
                 IMethodAnnotationHandler.CALL.handle(a, this);
             }

@@ -7,7 +7,6 @@ import com.daiwj.invoker.annotation.Header;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.Post;
 import com.daiwj.invoker.annotation.SourceFactory;
-import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.demo.okhttp.TestCallFactory;
 import com.daiwj.invoker.demo.okhttp.TestInvokerProvider;
 import com.daiwj.invoker.demo.okhttp.TestSource;
@@ -32,7 +31,7 @@ interface TestApi {
     @Header(name = "invoker-user-agent", value = "Invoker")
     @Get("platform/api/dataCall")
     @SourceFactory(TestSource.class)
-//    @CallFactory(TestCallFactory.class)
+    @CallFactory(TestCallFactory.class)
     DataCaller<TestInfo> dataCall(
             @Param("name") String name,
             @Param("password") String password

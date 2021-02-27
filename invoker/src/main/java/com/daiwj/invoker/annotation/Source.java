@@ -1,5 +1,7 @@
 package com.daiwj.invoker.annotation;
 
+import com.daiwj.invoker.runtime.ISource;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,6 +12,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@interface Source {
+public @interface Source {
+
+    Class<? extends ISource> value();
 
 }

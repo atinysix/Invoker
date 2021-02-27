@@ -72,7 +72,7 @@ public class TestInvokerCreator implements InvokerCreator {
         final SourceFactory<TestSource> mSourceFactory = new SourceFactory<TestSource>() {
 
             @Override
-            public Class<TestSource> source() {
+            public Class<TestSource> create() {
                 return TestSource.class;
             }
         };

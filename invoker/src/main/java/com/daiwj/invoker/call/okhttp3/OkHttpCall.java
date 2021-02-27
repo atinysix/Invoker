@@ -89,7 +89,6 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 if (caller instanceof SourceCaller) {
                     final SourceCaller caller = (SourceCaller) getCaller();
                     if (caller.isDataOnly()) {
-
                         executeSuccess(callback, new SuccessResult<>(origin, source.data()));
                     } else {
                         executeSuccess(callback, new SuccessResult<>(origin, content));

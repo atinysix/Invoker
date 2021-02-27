@@ -6,6 +6,7 @@ import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
 import com.daiwj.invoker.annotation.Post;
+import com.daiwj.invoker.annotation.Source;
 
 import java.lang.annotation.Annotation;
 
@@ -15,6 +16,17 @@ import java.lang.annotation.Annotation;
 public interface IMethodAnnotationHandler {
 
     void handle(Annotation source, MethodVisitor<?> visitor);
+
+    IMethodAnnotationHandler POST = new IMethodAnnotationHandler() {
+
+        @Override
+        public void handle(Annotation source, MethodVisitor<?> visitor) {
+            Post target = (Post) source;
+            visitor.mHttpMethod = "POST";
+            visitor.mRelativeUrl = target.value();
+            visitor.mJsonBody = target.isJsonBody();
+        }
+    };
 
     IMethodAnnotationHandler HOST = new IMethodAnnotationHandler() {
 
@@ -38,17 +50,6 @@ public interface IMethodAnnotationHandler {
         }
     };
 
-    IMethodAnnotationHandler POST = new IMethodAnnotationHandler() {
-
-        @Override
-        public void handle(Annotation source, MethodVisitor<?> visitor) {
-            Post target = (Post) source;
-            visitor.mHttpMethod = "POST";
-            visitor.mRelativeUrl = target.value();
-            visitor.mJsonBody = target.isJsonBody();
-        }
-    };
-
     IMethodAnnotationHandler HEADER = new IMethodAnnotationHandler() {
 
         @Override
@@ -57,6 +58,15 @@ public interface IMethodAnnotationHandler {
             final String name = target.name();
             final String value = target.value();
             visitor.getHeaders().put(name, value);
+        }
+    };
+
+    IMethodAnnotationHandler SOURCE = new IMethodAnnotationHandler() {
+
+        @Override
+        public void handle(Annotation source, MethodVisitor<?> visitor) {
+            Source target = (Source) source;
+            visitor.mSourceType = target.value();
         }
     };
 }

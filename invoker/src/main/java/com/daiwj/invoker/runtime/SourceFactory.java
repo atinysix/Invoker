@@ -5,6 +5,6 @@ package com.daiwj.invoker.runtime;
  */
 public interface SourceFactory<S extends ISource> {
 
-    Class<S> source();
+    Class<S> create();
 
 }

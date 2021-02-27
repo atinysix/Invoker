@@ -3,7 +3,6 @@ package com.daiwj.invoker.demo;
 import com.daiwj.invoker.annotation.Creator;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
-import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.Post;
 import com.daiwj.invoker.demo.okhttp.TestInvokerCreator;

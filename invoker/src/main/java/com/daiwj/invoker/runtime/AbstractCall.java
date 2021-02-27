@@ -53,7 +53,11 @@ public abstract class AbstractCall<Data> implements Call<Data> {
 
     @Override
     public ISource parseSource(String content) {
-        return getDataParser().parse(content, getSourceFactory().source());
+        Class<?> sourceType = getMethodVisitor().getSourceType();
+        if (sourceType == null) {
+            sourceType = getSourceFactory().create();
+        }
+        return getDataParser().parse(content, sourceType);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.ParamMap;
 import com.daiwj.invoker.annotation.Post;
+import com.daiwj.invoker.annotation.Source;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -29,6 +30,7 @@ public final class MethodVisitor<Data> {
     protected Method mMethod;
     protected String mApiName;
     protected Class<?> mCallerType;
+    protected Class<? extends ISource> mSourceType;
     protected Type mDataType;
 
     protected String mHttpMethod = "GET";
@@ -53,9 +55,14 @@ public final class MethodVisitor<Data> {
     private void setMethod(Method method) {
         mMethod = method;
 
-        final Host baseUrl = method.getDeclaringClass().getAnnotation(Host.class);
-        if (baseUrl != null) {
-            mBaseUrl = baseUrl.value();
+        final Host host = method.getDeclaringClass().getAnnotation(Host.class);
+        if (host != null) {
+            IMethodAnnotationHandler.HOST.handle(host, this);
+        }
+
+        final Source source = method.getDeclaringClass().getAnnotation(Source.class);
+        if (source != null) {
+            IMethodAnnotationHandler.SOURCE.handle(source, this);
         }
 
         mApiName = method.getDeclaringClass().getSimpleName();
@@ -66,6 +73,8 @@ public final class MethodVisitor<Data> {
         for (Annotation a : mMethodAnnotations) {
             if (a instanceof Host) {
                 IMethodAnnotationHandler.HOST.handle(a, this);
+            } else if (a instanceof Source) {
+                IMethodAnnotationHandler.SOURCE.handle(a, this);
             } else if (a instanceof Get) {
                 IMethodAnnotationHandler.GET.handle(a, this);
             } else if (a instanceof Post) {
@@ -112,6 +121,10 @@ public final class MethodVisitor<Data> {
             mHeaders = new HashMap<>();
         }
         return mHeaders;
+    }
+
+    public Class<? extends ISource> getSourceType() {
+        return mSourceType;
     }
 
     public Type getDataType() {
@@ -226,6 +239,7 @@ public final class MethodVisitor<Data> {
             visitor.mMethod = mOrigin.mMethod;
             visitor.mApiName = mOrigin.mApiName;
             visitor.mCallerType = mTargetClassType;
+            visitor.mSourceType = mOrigin.mSourceType;
             visitor.mDataType = mTargetDataType;
 
             visitor.mHttpMethod = mOrigin.mHttpMethod;

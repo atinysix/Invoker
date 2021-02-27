@@ -5,6 +5,8 @@ package com.daiwj.invoker.runtime;
  */
 public interface ISource {
 
+    boolean isSuccessful();
+
     String data();
 
 }

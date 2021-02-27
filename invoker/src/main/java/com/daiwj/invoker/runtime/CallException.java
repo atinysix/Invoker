@@ -14,7 +14,7 @@ public final class CallException extends Exception {
         mFailure = failure;
     }
 
-    public FailureResult<?> getFailure() {
-        return mFailure;
+    public <F extends IFailure> FailureResult<F> getFailure() {
+        return (FailureResult<F>) mFailure;
     }
 }

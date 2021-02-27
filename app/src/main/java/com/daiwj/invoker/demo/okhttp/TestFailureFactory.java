@@ -2,6 +2,7 @@ package com.daiwj.invoker.demo.okhttp;
 
 import com.daiwj.invoker.call.okhttp3.OkHttpFailureFactory;
 import com.daiwj.invoker.runtime.IFailure;
+import com.daiwj.invoker.runtime.ISource;
 
 import java.net.SocketTimeoutException;
 
@@ -18,6 +19,15 @@ public class TestFailureFactory implements OkHttpFailureFactory {
     }
 
     @Override
+    public IFailure create(ISource source) {
+        TestSource testSource = (TestSource) source;
+        TestFailure failure = new TestFailure();
+        failure.setCode(testSource.getCode());
+        failure.setMessage(testSource.getMessage());
+        return failure;
+    }
+
+    @Override
     public TestError create(Exception e) {
         TestError error = new TestError();
         if (e instanceof SocketTimeoutException) {
@@ -28,13 +38,6 @@ public class TestFailureFactory implements OkHttpFailureFactory {
             error.setMessage("服务器开小差，请稍后再试");
         }
         return error;
-    }
-
-    public TestFailure create(TestSource source) {
-        TestFailure failure = new TestFailure();
-        failure.setCode(source.getCode());
-        failure.setMessage(source.getMessage());
-        return failure;
     }
 
 }

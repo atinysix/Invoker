@@ -22,7 +22,7 @@ public interface ILifecycleOwner {
     void onDestroy();
 
     static <Owner> String name(Owner owner) {
-        return owner.getClass().getCanonicalName() + "." + owner.hashCode();
+        return owner.getClass().getName() + "." + owner.hashCode();
     }
 
 }

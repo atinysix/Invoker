@@ -1,11 +1,12 @@
 package com.daiwj.invoker.demo;
 
-import com.daiwj.invoker.annotation.Factory;
+import com.daiwj.invoker.annotation.Creator;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
+import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.Post;
-import com.daiwj.invoker.demo.okhttp.TestInvokerFactory;
+import com.daiwj.invoker.demo.okhttp.TestInvokerCreator;
 import com.daiwj.invoker.runtime.DataCaller;
 import com.daiwj.invoker.runtime.SourceCaller;
 
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * author: daiwj on 2020/12/2 21:50
  */
-@Factory(TestInvokerFactory.class)
+@Creator(TestInvokerCreator.class)
 interface TestApi {
 
     @Header(name = "invoker-user-agent", value = "Invoker")

@@ -160,10 +160,10 @@ public final class MethodVisitor<Data> {
     public Caller<Data> createCaller() throws Exception {
         Class<?> c = Class.forName(mCallerType.getName());
         if (Modifier.isInterface(c.getModifiers())) {
-            InvokerUtil.error("Caller cannot be a interface: " + c.getCanonicalName());
+            InvokerUtil.error("Caller cannot be a interface: " + c.getName());
         }
         if (Modifier.isAbstract(c.getModifiers())) {
-            InvokerUtil.error("Caller cannot be a abstract class: " + c.getCanonicalName());
+            InvokerUtil.error("Caller cannot be a abstract class: " + c.getName());
         }
         Constructor<?> constructor = c.getConstructor(MethodVisitor.class);
         return (Caller<Data>) constructor.newInstance(this);

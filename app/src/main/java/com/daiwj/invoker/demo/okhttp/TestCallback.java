@@ -1,8 +1,11 @@
 package com.daiwj.invoker.demo.okhttp;
 
+import android.util.Log;
+
 import com.daiwj.invoker.demo.okhttp.extra.TestHttpCodeInterceptor;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.FailureResult;
+import com.daiwj.invoker.runtime.Result;
 import com.daiwj.invoker.runtime.SuccessResult;
 
 /**
@@ -11,6 +14,10 @@ import com.daiwj.invoker.runtime.SuccessResult;
 public class TestCallback<Data> implements Callback<Data, TestFailure> {
 
     private TestHttpCodeInterceptor mInterceptor = new TestHttpCodeInterceptor();
+
+    @Override
+    public void onResult(Result result) {
+    }
 
     @Override
     public void onSuccess(SuccessResult<Data> result) {

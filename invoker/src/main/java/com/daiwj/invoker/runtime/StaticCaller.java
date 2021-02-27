@@ -86,7 +86,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public final SuccessResult<Data> callSync() throws CallException {
+    public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
         mCall = (Call<Data>) getClient().getCallFactory().newCall(this);
         return mCall.callSync();
     }

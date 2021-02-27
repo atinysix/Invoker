@@ -1,6 +1,6 @@
 package com.daiwj.invoker.annotation;
 
-import com.daiwj.invoker.runtime.InvokerFactory;
+import com.daiwj.invoker.runtime.InvokerCreator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Factory {
+public @interface Creator {
 
     String name() default "";
 
-    Class<? extends InvokerFactory> value();
+    Class<? extends InvokerCreator> value();
 
 }

@@ -7,11 +7,11 @@ public interface IFailure {
 
     String getMessage();
 
-    void setMessage(String message);
-
     interface Factory {
 
         IFailure create(String message);
+
+        IFailure create(ISource source);
 
     }
 

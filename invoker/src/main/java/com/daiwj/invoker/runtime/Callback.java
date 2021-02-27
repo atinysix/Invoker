@@ -5,8 +5,25 @@ package com.daiwj.invoker.runtime;
  */
 public interface Callback<Data, F extends IFailure> {
 
+    /**
+     * for custom result
+     *
+     * @param result custom result
+     */
+    void onResult(Result result);
+
+    /**
+     * for successful result
+     *
+     * @param result
+     */
     void onSuccess(SuccessResult<Data> result);
 
+    /**
+     * for fail result
+     *
+     * @param result
+     */
     void onFailure(FailureResult<F> result);
 
 }

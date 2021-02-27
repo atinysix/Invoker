@@ -35,6 +35,7 @@ public class GsonParserFactory implements Parser.Factory {
             try {
                 return mGson.fromJson(from, c);
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -47,6 +48,7 @@ public class GsonParserFactory implements Parser.Factory {
             try {
                 return mGson.toJson(from);
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }

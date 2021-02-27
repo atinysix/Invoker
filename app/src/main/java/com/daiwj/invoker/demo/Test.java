@@ -44,7 +44,7 @@ public class Test {
     public static String failure() {
         JSONObject root = new JSONObject();
         root.put("status", 0);
-        root.put("code", 302);
+        root.put("code", 400);
         root.put("message", "业务错误");
         return root.toString();
     }

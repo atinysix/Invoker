@@ -10,7 +10,7 @@ public class TestSource implements ISource {
 
     private int status;
     private String code;
-    private String data;
+    private Object data;
     private String message;
 
     public int getStatus() {
@@ -33,8 +33,8 @@ public class TestSource implements ISource {
         this.data = data;
     }
 
-    public String getData() {
-        return data == null ? "" : data;
+    public Object getData() {
+        return data;
     }
 
     public String getMessage() {
@@ -45,13 +45,15 @@ public class TestSource implements ISource {
         this.message = message;
     }
 
+    @Override
     public boolean isSuccessful() {
         return status == SUCCESS;
     }
 
     @Override
     public String data() {
-        return getData();
+        final Object object = getData();
+        return object == null ? "" : object.toString();
     }
 
 }

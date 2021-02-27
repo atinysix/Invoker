@@ -32,8 +32,8 @@ public abstract class AbstractCall<Data> implements Call<Data> {
     }
 
     @Override
-    public SourceConverter<? extends ISource> getSourceConverter() {
-        return mCaller.getClient().getSourceConverter();
+    public SourceFactory<? extends ISource> getSourceFactory() {
+        return mCaller.getClient().getSourceFactory();
     }
 
     @Override
@@ -51,16 +51,39 @@ public abstract class AbstractCall<Data> implements Call<Data> {
         return mCaller.getClient().getFailureFactory();
     }
 
-    protected final void execute(Runnable r) {
-        mCaller.getClient().getCallbackExecutor().execute(r);
+    @Override
+    public ISource parseSource(String content) {
+        return getDataParser().parse(content, getSourceFactory().source());
+    }
+
+    @Override
+    public Data parseData(ISource source) {
+        return getDataParser().parse(source.data(), getMethodVisitor().getDataType());
+    }
+
+    @Override
+    public Result parseSuccess(Result origin, ISource source) {
+        if (source.isSuccessful()) {
+            return new SuccessResult<>(origin, parseData(source));
+        } else {
+            return parseFailure(origin, source);
+        }
+    }
+
+    @Override
+    public FailureResult<?> parseFailure(Result origin, ISource source) {
+        return new FailureResult<>(origin, getFailureFactory().create(source));
     }
 
     protected final void executeSuccess(Callback<?, ?> c, SuccessResult<?> result) {
-        mCaller.getClient().getCallbackExecutor().executeSuccess(c, result);
+        mCaller.getClient().getResultExecutor().executeSuccess(c, result);
     }
 
     protected final void executeFailure(Callback<?, ?> c, FailureResult<?> result) {
-        mCaller.getClient().getCallbackExecutor().executeFailure(c, result);
+        mCaller.getClient().getResultExecutor().executeFailure(c, result);
     }
 
+    protected final void executeResult(Callback<?, ?> c, Result result) {
+        mCaller.getClient().getResultExecutor().executeResult(c, result);
+    }
 }

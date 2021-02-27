@@ -1,17 +1,16 @@
 package com.daiwj.invoker.demo.okhttp;
 
-import com.alibaba.fastjson.JSON;
 import com.daiwj.invoker.Invoker;
+import com.daiwj.invoker.call.okhttp3.OkHttpCall;
+import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.demo.BuildConfig;
 import com.daiwj.invoker.demo.okhttp.extra.TestLogInterceptor;
 import com.daiwj.invoker.demo.okhttp.extra.TestRequestInterceptor;
 import com.daiwj.invoker.parser.FastJsonParserFactory;
-import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.Caller;
-import com.daiwj.invoker.runtime.InvokerFactory;
-import com.daiwj.invoker.runtime.SourceConverter;
-import com.google.gson.Gson;
+import com.daiwj.invoker.runtime.InvokerCreator;
+import com.daiwj.invoker.runtime.SourceFactory;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +25,7 @@ import okhttp3.Protocol;
 /**
  * author: daiwj on 2020/12/4 10:50
  */
-public class TestInvokerFactory implements InvokerFactory {
+public class TestInvokerCreator implements InvokerCreator {
 
     @Override
     public Invoker create() {
@@ -70,34 +69,19 @@ public class TestInvokerFactory implements InvokerFactory {
             }
         }
 
-        final OkHttpClient client = clientBuilder.build();
-
-        final Call.CallFactory mCallFactory = new Call.CallFactory() {
+        final SourceFactory<TestSource> mSourceFactory = new SourceFactory<TestSource>() {
 
             @Override
-            public Call<?> newCall(Caller<?> caller) {
-                return new TestOkHttpCall<>(caller, client);
-            }
-
-        };
-
-        final SourceConverter<TestSource> mSourceConverter = new SourceConverter<TestSource>() {
-
-            @Override
-            public TestSource convert(String from) {
-                try {
-                    return JSON.parseObject(from, TestSource.class);
-                } catch (Exception e) {
-                    return new TestSource();
-                }
+            public Class<TestSource> source() {
+                return TestSource.class;
             }
         };
 
         return new Invoker.Builder()
                 .baseUrl("https://www.baidu.com/")
-                .callFactory(mCallFactory) // call实体
-                .sourceConverter(mSourceConverter) // response层数据
-                .parserFactory(new GsonParserFactory()) // data层数据
+                .callFactory(new OkHttpCallFactory(clientBuilder.build())) // call实体
+                .sourceFactory(mSourceFactory) // response层数据
+                .parserFactory(new FastJsonParserFactory()) // data层数据
                 .failureFactory(new TestFailureFactory()) // failure数据
                 .debug(BuildConfig.DEBUG)
                 .build();

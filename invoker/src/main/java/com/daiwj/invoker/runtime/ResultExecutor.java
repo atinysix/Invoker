@@ -3,9 +3,9 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 2020/12/4 16:01
  */
-public interface CallbackExecutor {
+public interface ResultExecutor {
 
-    void execute(Runnable r);
+    void executeResult(Callback c, Result result);
 
     void executeSuccess(Callback c, SuccessResult<?> success);
 

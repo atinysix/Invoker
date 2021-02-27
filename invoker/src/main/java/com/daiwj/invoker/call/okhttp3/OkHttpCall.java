@@ -1,5 +1,6 @@
 package com.daiwj.invoker.call.okhttp3;
 
+import com.daiwj.invoker.runtime.ISource;
 import com.daiwj.invoker.runtime.InvokerLog;
 import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.AbstractCall;
@@ -13,6 +14,7 @@ import com.daiwj.invoker.runtime.FilePart;
 import com.daiwj.invoker.runtime.MethodVisitor;
 import com.daiwj.invoker.runtime.RequestParam;
 import com.daiwj.invoker.runtime.SourceCaller;
+import com.daiwj.invoker.runtime.CustomResultException;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +35,7 @@ import okhttp3.Response;
 /**
  * author: daiwj on 2020/12/3 16:26
  */
-public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
+public class OkHttpCall<Data> extends AbstractCall<Data> {
 
     private OkHttpClient mOkHttpClient;
     private Call mCall;
@@ -61,7 +63,7 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
                     return;
                 }
 
-                parseFailure(callback, new Result(caller), e);
+                executeFailure(callback, parseFailure(new Result(caller), e));
             }
 
             @Override
@@ -75,28 +77,32 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
                     return;
                 }
 
-                try {
-                    final SuccessResult<Data> success = new SuccessResult<Data>(caller);
-                    if (caller.getClient().isDebug()) {
-                        success.setResponse(new OkHttpResponse(response, caller.getMocker()));
-                    } else {
-                        success.setResponse(new OkHttpResponse(response));
-                    }
-                    final String content = success.getResponse().getContent();
+                final Result origin = new Result(caller);
+                if (caller.getClient().isDebug()) {
+                    origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
+                } else {
+                    origin.setResponse(new OkHttpResponse(response));
+                }
+                final String content = origin.getResponse().getContent();
+                final ISource source = parseSource(content);
 
-                    if (caller instanceof SourceCaller) {
-                        SourceCaller caller = (SourceCaller) getCaller();
-                        if (caller.isDataOnly()) {
-                            success.setData((Data) getSourceConverter().convert(content).data());
-                        } else {
-                            success.setData((Data) content);
-                        }
-                        executeSuccess(callback, success);
+                if (caller instanceof SourceCaller) {
+                    final SourceCaller caller = (SourceCaller) getCaller();
+                    if (caller.isDataOnly()) {
+
+                        executeSuccess(callback, new SuccessResult<>(origin, source.data()));
                     } else {
-                        parseSuccess(callback, success);
+                        executeSuccess(callback, new SuccessResult<>(origin, content));
                     }
-                } catch (Exception e) {
-                    parseFailure(callback, new Result(caller), e);
+                } else {
+                    final Result result = parseSuccess(origin, source);
+                    if (result instanceof SuccessResult) {
+                        executeSuccess(callback, (SuccessResult<?>) result);
+                    } else if (result instanceof FailureResult) {
+                        executeFailure(callback, (FailureResult<?>) result);
+                    } else {
+                        executeResult(callback, result);
+                    }
                 }
             }
 
@@ -104,34 +110,43 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
     }
 
     @Override
-    public final SuccessResult<Data> callSync() throws CallException {
+    public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
         final Caller<Data> caller = getCaller();
 
         try {
             mCall = mOkHttpClient.newCall(onResolveOriginRequest(makeOriginRequest()));
             final Response response = mCall.execute();
 
-            final SuccessResult<Data> success = new SuccessResult<>(caller);
+            final Result origin = new Result(caller);
             if (caller.getClient().isDebug()) {
-                success.setResponse(new OkHttpResponse(response, caller.getMocker()));
+                origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
             } else {
-                success.setResponse(new OkHttpResponse(response));
+                origin.setResponse(new OkHttpResponse(response));
             }
-            final String content = success.getResponse().getContent();
+            final String content = origin.getResponse().getContent();
+            final ISource source = parseSource(content);
 
             if (caller instanceof SourceCaller) {
                 final SourceCaller sourceCaller = (SourceCaller) caller;
                 if (sourceCaller.isDataOnly()) {
-                    success.setData((Data) getSourceConverter().convert(content).data());
+                    return new SuccessResult<Data>(origin, (Data) source.data());
                 } else {
-                    success.setData((Data) content);
+                    return new SuccessResult<Data>(origin, (Data) content);
                 }
-                return success;
             } else {
-                return parseSuccessSync(success);
+                final Result result = parseSuccess(origin, source);
+                if (result instanceof SuccessResult) {
+                    return (SuccessResult<Data>) result;
+                } else if (result instanceof FailureResult) {
+                    throw new CallException((FailureResult<?>) result);
+                } else {
+                    throw new CustomResultException(result);
+                }
             }
+        } catch (CallException | CustomResultException e) {
+            throw e;
         } catch (Exception e) {
-            throw new CallException(parseFailureSync(new Result(caller), e));
+            throw new CallException(parseFailure(new Result(caller), e));
         }
     }
 
@@ -238,12 +253,12 @@ public abstract class OkHttpCall<Data> extends AbstractCall<Data> {
         mCall.cancel();
     }
 
-    protected abstract void parseSuccess(Callback<Data, ?> c, Result result);
+    @Override
+    public OkHttpFailureFactory getFailureFactory() {
+        return (OkHttpFailureFactory) super.getFailureFactory();
+    }
 
-    protected abstract void parseFailure(Callback<Data, ?> c, Result result, Exception e);
-
-    protected abstract SuccessResult<Data> parseSuccessSync(Result result) throws CallException;
-
-    protected abstract FailureResult<?> parseFailureSync(Result result, Exception e);
-
+    protected FailureResult<?> parseFailure(Result origin, Exception e) {
+        return new FailureResult<>(origin, getFailureFactory().create(e));
+    }
 }

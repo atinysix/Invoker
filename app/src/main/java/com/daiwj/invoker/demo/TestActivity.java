@@ -52,7 +52,7 @@ public class TestActivity extends Activity {
             public void onClick(View v) {
                 Invoker.invoke(TestApi.class)
                         .dataCall("MeepoKing", "123456")
-                        .mock(Test.success())
+                        .mock(Test.failure())
                         .call(getActivity(), new TestCallback<TestInfo>() {
                             @Override
                             public void onSuccess(SuccessResult<TestInfo> result) {

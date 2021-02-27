@@ -11,9 +11,9 @@ public class Result {
         mCaller = caller;
     }
 
-    public Result(Result source) {
-        mCaller = source.mCaller;
-        mResponse = source.mResponse;
+    public Result(Result origin) {
+        mCaller = origin.mCaller;
+        mResponse = origin.mResponse;
     }
 
     public <Data> Caller<Data> getCaller() {

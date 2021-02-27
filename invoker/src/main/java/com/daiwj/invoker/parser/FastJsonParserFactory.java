@@ -29,6 +29,7 @@ public class FastJsonParserFactory implements Parser.Factory {
             try {
                 return JSON.parseObject(from, c);
             } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }
@@ -41,6 +42,7 @@ public class FastJsonParserFactory implements Parser.Factory {
             try {
                 return JSON.toJSONString(from);
             } catch (Exception e) {
+                e.printStackTrace();
                 return "";
             }
         }

@@ -4,21 +4,24 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.daiwj.invoker.annotation.Factory;
+import com.daiwj.invoker.annotation.Creator;
+import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
+import com.daiwj.invoker.call.okhttp3.OkHttpFailureFactory;
 import com.daiwj.invoker.lifecycle.LifecycleOwnerManager;
+import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
-import com.daiwj.invoker.runtime.CallbackExecutor;
+import com.daiwj.invoker.runtime.ResultExecutor;
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.InvokerFactory;
+import com.daiwj.invoker.runtime.InvokerCreator;
 import com.daiwj.invoker.runtime.InvokerLog;
 import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.IFailure;
 import com.daiwj.invoker.runtime.MethodVisitor;
 import com.daiwj.invoker.runtime.Parser;
 import com.daiwj.invoker.runtime.ISource;
-import com.daiwj.invoker.runtime.SourceConverter;
+import com.daiwj.invoker.runtime.SourceFactory;
 import com.daiwj.invoker.runtime.StringParser;
-import com.daiwj.invoker.runtime.UiThreadCallbackExecutor;
+import com.daiwj.invoker.runtime.UiThreadResultExecutor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -39,19 +42,19 @@ public final class Invoker {
 
     private String mBaseUrl;
     private Call.CallFactory mCallFactory;
-    private SourceConverter<? extends ISource> mSourceConverter;
+    private SourceFactory<? extends ISource> mSourceFactory;
     private Parser.Factory mParserFactory;
     private DataParser mDataParser;
     private StringParser mStringParser;
     private IFailure.Factory mFailureFactory;
 
-    private CallbackExecutor mCallbackExecutor = new UiThreadCallbackExecutor();
+    private ResultExecutor mResultExecutor = new UiThreadResultExecutor();
 
     private LifecycleOwnerManager mOwnerManager = new LifecycleOwnerManager();
 
     public static <T> T invoke(Class<T> c) {
         if (!c.isInterface()) {
-            InvokerUtil.error("cannot provide invoker api for a class type: " + c.getCanonicalName());
+            InvokerUtil.error("cannot provide invoker api for a class type: " + c.getName());
         }
         return (T) ApiProvider.provide(c);
     }
@@ -72,7 +75,7 @@ public final class Invoker {
         mDebug = builder.mDebug;
         mBaseUrl = builder.mBaseUrl;
         mCallFactory = builder.mCallFactory;
-        mSourceConverter = builder.mSourceConverter;
+        mSourceFactory = builder.mSourceFactory;
         mParserFactory = builder.mParserFactory;
         mDataParser = builder.mParserFactory.dataParser();
         mStringParser = builder.mParserFactory.stringParser();
@@ -93,8 +96,8 @@ public final class Invoker {
         return mCallFactory;
     }
 
-    public SourceConverter<? extends ISource> getSourceConverter() {
-        return mSourceConverter;
+    public SourceFactory<? extends ISource> getSourceFactory() {
+        return mSourceFactory;
     }
 
     public Parser.Factory getParserFactory() {
@@ -113,8 +116,8 @@ public final class Invoker {
         return mFailureFactory;
     }
 
-    public CallbackExecutor getCallbackExecutor() {
-        return mCallbackExecutor;
+    public ResultExecutor getResultExecutor() {
+        return mResultExecutor;
     }
 
     public LifecycleOwnerManager getLifecycleOwnerManager() {
@@ -124,10 +127,10 @@ public final class Invoker {
     public static final class Builder {
         private boolean mDebug;
         private String mBaseUrl;
-        private Call.CallFactory mCallFactory;
-        private SourceConverter<? extends ISource> mSourceConverter;
-        private Parser.Factory mParserFactory;
-        private IFailure.Factory mFailureFactory;
+        private Call.CallFactory mCallFactory = new OkHttpCallFactory();
+        private SourceFactory<? extends ISource> mSourceFactory;
+        private Parser.Factory mParserFactory = new GsonParserFactory();
+        private IFailure.Factory mFailureFactory = OkHttpFailureFactory.DEFAULT;
 
         public Builder debug(boolean debug) {
             mDebug = debug;
@@ -144,8 +147,8 @@ public final class Invoker {
             return this;
         }
 
-        public Builder sourceConverter(SourceConverter<? extends ISource> provider) {
-            mSourceConverter = provider;
+        public Builder sourceFactory(SourceFactory<? extends ISource> factory) {
+            mSourceFactory = factory;
             return this;
         }
 
@@ -154,8 +157,8 @@ public final class Invoker {
             return this;
         }
 
-        public Builder failureFactory(IFailure.Factory failureFactory) {
-            mFailureFactory = failureFactory;
+        public Builder failureFactory(IFailure.Factory factory) {
+            mFailureFactory = factory;
             return this;
         }
 
@@ -181,30 +184,29 @@ public final class Invoker {
         final static Map<String, Object> mApiMap = new HashMap<>();
 
         static <Api> Api provide(Class<Api> c) {
-            final Factory factory = c.getAnnotation(Factory.class);
-            InvokerUtil.checkNull(factory, "@Factory: must be added on class: " + c.getCanonicalName());
+            final Creator creator = c.getAnnotation(Creator.class);
+            InvokerUtil.checkNull(creator, "@Creator not found on class: " + c.getName());
 
-            Class<? extends InvokerFactory> factoryClass = factory.value();
-            InvokerUtil.checkNull(factory, "@Factory: factory cannot be null on class: " + c.getCanonicalName());
+            final Class<? extends InvokerCreator> creatorClass = creator.value();
 
-            String apiName = factory.name();
+            String apiName = creator.name();
             if (TextUtils.isEmpty(apiName)) {
-                apiName = c.getCanonicalName();
+                apiName = c.getName();
             }
             Object api = mApiMap.get(apiName);
             if (api == null) {
-                api = create(c, factoryClass);
+                api = create(c, creatorClass);
                 mApiMap.put(apiName, api);
             }
             return (Api) api;
         }
 
-        static <Api> Api create(Class<Api> c, Class<? extends InvokerFactory> factoryClass) {
+        static <Api> Api create(Class<Api> c, Class<? extends InvokerCreator> factoryClass) {
             try {
-                final String factoryClassName = factoryClass.getCanonicalName();
+                final String factoryClassName = factoryClass.getName();
                 Invoker client = mFactoryMap.get(factoryClassName);
                 if (client == null) {
-                    InvokerFactory factory = factoryClass.newInstance();
+                    InvokerCreator factory = factoryClass.newInstance();
                     client = factory.create();
                     mFactoryMap.put(factoryClassName, client);
                 }

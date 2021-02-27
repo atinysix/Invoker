@@ -7,18 +7,23 @@ import android.os.Looper;
  * author: daiwj on 2020/12/4 15:51
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class UiThreadCallbackExecutor implements CallbackExecutor {
+public class UiThreadResultExecutor implements ResultExecutor {
 
-    private final Handler mPoster = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
-    public void execute(Runnable r) {
-        mPoster.post(r);
+    public void executeResult(Callback c, Result result) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                c.onResult(result);
+            }
+        });
     }
 
     @Override
     public void executeSuccess(Callback c, SuccessResult<?> success) {
-        mPoster.post(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
                 c.onSuccess(success);
@@ -28,7 +33,7 @@ public class UiThreadCallbackExecutor implements CallbackExecutor {
 
     @Override
     public void executeFailure(Callback c, FailureResult<?> failure) {
-        mPoster.post(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
                 c.onFailure(failure);

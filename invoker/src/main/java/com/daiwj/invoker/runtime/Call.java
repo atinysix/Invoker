@@ -11,7 +11,7 @@ public interface Call<Data> {
 
     void call(Callback<Data, ?> callback);
 
-    SuccessResult<Data> callSync() throws CallException;
+    SuccessResult<Data> callSync() throws CallException, CustomResultException;
 
     void cancel();
 
@@ -19,13 +19,21 @@ public interface Call<Data> {
 
     void finish();
 
-    SourceConverter<?> getSourceConverter();
+    SourceFactory<?> getSourceFactory();
 
     DataParser getDataParser();
 
     StringParser getJsonStringParser();
 
     IFailure.Factory getFailureFactory();
+
+    Result parseSuccess(Result origin, ISource source);
+
+    FailureResult<?> parseFailure(Result origin, ISource source);
+
+    ISource parseSource(String content);
+
+    Data parseData(ISource source);
 
     interface CallFactory {
 

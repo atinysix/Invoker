@@ -113,7 +113,7 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public SuccessResult<Data> callSync() throws CallException {
+    public SuccessResult<Data> callSync() throws CallException, CustomResultException {
         return mOrigin.callSync();
     }
 

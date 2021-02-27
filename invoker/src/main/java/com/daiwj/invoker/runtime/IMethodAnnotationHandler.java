@@ -2,11 +2,12 @@ package com.daiwj.invoker.runtime;
 
 import android.text.TextUtils;
 
+import com.daiwj.invoker.annotation.CallFactory;
 import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
 import com.daiwj.invoker.annotation.Post;
-import com.daiwj.invoker.annotation.Source;
+import com.daiwj.invoker.annotation.SourceFactory;
 
 import java.lang.annotation.Annotation;
 
@@ -65,8 +66,21 @@ public interface IMethodAnnotationHandler {
 
         @Override
         public void handle(Annotation source, MethodVisitor<?> visitor) {
-            Source target = (Source) source;
+            SourceFactory target = (SourceFactory) source;
             visitor.mSourceType = target.value();
+        }
+    };
+
+    IMethodAnnotationHandler CALL = new IMethodAnnotationHandler() {
+
+        @Override
+        public void handle(Annotation source, MethodVisitor<?> visitor) {
+            CallFactory target = (CallFactory) source;
+            try {
+                visitor.mCallFactory = target.value().newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 }

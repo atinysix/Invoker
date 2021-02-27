@@ -56,8 +56,17 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
+    public Call<Data> newCall() {
+        Call.CallFactory factory = getMethodVisitor().getCallFactory();
+        if (factory == null) {
+            factory = getClient().getCallFactory();
+        }
+        return (Call<Data>) factory.newCall(this);
+    }
+
+    @Override
     public final <F extends IFailure> void call(Callback<Data, F> callback) {
-        mCall = (Call<Data>) getClient().getCallFactory().newCall(this);
+        mCall = newCall();
         mCall.call(callback);
     }
 
@@ -69,7 +78,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        mCall = (Call<Data>) getClient().getCallFactory().newCall(this);
+        mCall = newCall();
         mCall.call(callback);
     }
 
@@ -81,8 +90,9 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        mCall = (Call<Data>) getClient().getCallFactory().newCall(this);
+        mCall = newCall();
         mCall.call(callback);
+
     }
 
     @Override

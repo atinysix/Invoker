@@ -1,7 +1,7 @@
 package com.daiwj.invoker.parser;
 
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.Parser;
+import com.daiwj.invoker.runtime.ParserFactory;
 import com.daiwj.invoker.runtime.StringParser;
 import com.google.gson.Gson;
 
@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 /**
  * author: daiwj on 2020/12/25 14:02
  */
-public class GsonParserFactory implements Parser.Factory {
+public class GsonParserFactory implements ParserFactory {
 
     private Gson mGson;
 

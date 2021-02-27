@@ -13,15 +13,31 @@ public class OkHttpCallFactory implements Call.CallFactory {
     private OkHttpClient mClient;
 
     public OkHttpCallFactory() {
-        mClient =  new OkHttpClient.Builder().build();
+        mClient = createClient();
+        if (mClient == null) {
+            mClient = defaultClient();
+        }
     }
 
     public OkHttpCallFactory(OkHttpClient client) {
         mClient = client;
     }
 
-    @Override
-    public Call<?> newCall(Caller<?> caller) {
-        return new OkHttpCall<>(caller, mClient);
+    protected OkHttpClient createClient() {
+        return defaultClient();
     }
+
+    private OkHttpClient defaultClient() {
+        return new OkHttpClient.Builder().build();
+    }
+
+    @Override
+    public final Call<?> newCall(Caller<?> caller) {
+        return newCall(caller, mClient);
+    }
+
+    public Call<?> newCall(Caller<?> caller, OkHttpClient client) {
+        return new OkHttpCall<>(caller, client);
+    }
+
 }

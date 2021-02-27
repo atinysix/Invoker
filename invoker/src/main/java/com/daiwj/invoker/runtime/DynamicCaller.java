@@ -98,6 +98,11 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     @Override
+    public Call<Data> newCall() {
+        return mOrigin.newCall();
+    }
+
+    @Override
     public <F extends IFailure> void call(Callback<Data, F> callback) {
         mOrigin.call(callback);
     }

@@ -5,8 +5,8 @@ import com.daiwj.invoker.Invoker;
 /**
  * author: daiwj on 2020/12/4 10:47
  */
-public interface InvokerCreator {
+public interface InvokerProvider {
 
-    Invoker create();
+    Invoker provide();
 
 }

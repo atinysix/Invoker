@@ -1,6 +1,7 @@
 package com.daiwj.invoker.runtime;
 
 import com.daiwj.invoker.Invoker;
+import com.daiwj.invoker.annotation.CallFactory;
 import com.daiwj.invoker.annotation.FileParam;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
@@ -8,7 +9,7 @@ import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.ParamMap;
 import com.daiwj.invoker.annotation.Post;
-import com.daiwj.invoker.annotation.Source;
+import com.daiwj.invoker.annotation.SourceFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -44,6 +45,8 @@ public final class MethodVisitor<Data> {
     private List<RequestParam> mRequestParams;
     private List<FilePart> mFileParts;
 
+    protected Call.CallFactory mCallFactory;
+
     public Invoker getClient() {
         return mClient;
     }
@@ -60,7 +63,7 @@ public final class MethodVisitor<Data> {
             IMethodAnnotationHandler.HOST.handle(host, this);
         }
 
-        final Source source = method.getDeclaringClass().getAnnotation(Source.class);
+        final SourceFactory source = method.getDeclaringClass().getAnnotation(SourceFactory.class);
         if (source != null) {
             IMethodAnnotationHandler.SOURCE.handle(source, this);
         }
@@ -73,7 +76,7 @@ public final class MethodVisitor<Data> {
         for (Annotation a : mMethodAnnotations) {
             if (a instanceof Host) {
                 IMethodAnnotationHandler.HOST.handle(a, this);
-            } else if (a instanceof Source) {
+            } else if (a instanceof SourceFactory) {
                 IMethodAnnotationHandler.SOURCE.handle(a, this);
             } else if (a instanceof Get) {
                 IMethodAnnotationHandler.GET.handle(a, this);
@@ -81,6 +84,8 @@ public final class MethodVisitor<Data> {
                 IMethodAnnotationHandler.POST.handle(a, this);
             } else if (a instanceof Header) {
                 IMethodAnnotationHandler.HEADER.handle(a, this);
+            } else if (a instanceof CallFactory) {
+                IMethodAnnotationHandler.CALL.handle(a, this);
             }
         }
 
@@ -170,6 +175,10 @@ public final class MethodVisitor<Data> {
         return mFileParts;
     }
 
+    public Call.CallFactory getCallFactory() {
+        return mCallFactory;
+    }
+
     public Caller<Data> createCaller() throws Exception {
         Class<?> c = Class.forName(mCallerType.getName());
         if (Modifier.isInterface(c.getModifiers())) {
@@ -252,6 +261,8 @@ public final class MethodVisitor<Data> {
             visitor.mArgs = mOrigin.mArgs;
             visitor.mRequestParams = mOrigin.mRequestParams;
             visitor.mFileParts = mOrigin.mFileParts;
+
+            visitor.mCallFactory = mOrigin.mCallFactory;
 
             return visitor;
         }

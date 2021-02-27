@@ -6,10 +6,9 @@ import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.demo.BuildConfig;
 import com.daiwj.invoker.demo.okhttp.extra.TestLogInterceptor;
 import com.daiwj.invoker.demo.okhttp.extra.TestRequestInterceptor;
-import com.daiwj.invoker.parser.FastJsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.Caller;
-import com.daiwj.invoker.runtime.InvokerCreator;
+import com.daiwj.invoker.runtime.InvokerProvider;
 import com.daiwj.invoker.runtime.SourceFactory;
 
 import java.util.Collections;
@@ -25,11 +24,11 @@ import okhttp3.Protocol;
 /**
  * author: daiwj on 2020/12/4 10:50
  */
-public class TestInvokerCreator implements InvokerCreator {
+public class TestInvokerProvider implements InvokerProvider {
 
     @Override
-    public Invoker create() {
-        final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+    public Invoker provide() {
+        final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .addInterceptor(new TestRequestInterceptor())
                 .addInterceptor(new TestLogInterceptor()) //设置log拦截器
                 .connectTimeout(5, TimeUnit.SECONDS) //设置超时
@@ -41,7 +40,7 @@ public class TestInvokerCreator implements InvokerCreator {
         if (BuildConfig.DEBUG) {
             try {
                 //构造自己的SSLContext
-                clientBuilder.hostnameVerifier((hostname, session) -> true);
+                builder.hostnameVerifier((hostname, session) -> true);
                 TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                     @Override
                     public void checkClientTrusted(
@@ -62,12 +61,35 @@ public class TestInvokerCreator implements InvokerCreator {
                 }};
                 SSLContext sc = SSLContext.getInstance("TLS");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                clientBuilder.sslSocketFactory(sc.getSocketFactory());
-                clientBuilder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
+                builder.sslSocketFactory(sc.getSocketFactory());
+                builder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+//        final Call.CallFactory mCallFactory1 = new Call.CallFactory() {
+//
+//            @Override
+//            public Call<?> newCall(Caller<?> caller) {
+//                return new OkHttpCall<>(caller, builder.build());
+//            }
+//        };
+//
+//        final Call.CallFactory mCallFactory2 = new OkHttpCallFactory() {
+//
+//            @Override
+//            protected OkHttpClient createClient() {
+//                return builder.build();
+//            }
+//
+//            @Override
+//            public Call<?> newCall(Caller<?> caller, OkHttpClient client) {
+//                return new OkHttpCall<>(caller, client);
+//            }
+//        };
+//
+//        final Call.CallFactory mCallFactory3 = new OkHttpCallFactory(builder.build());
 
         final SourceFactory<TestSource> mSourceFactory = new SourceFactory<TestSource>() {
 
@@ -79,10 +101,10 @@ public class TestInvokerCreator implements InvokerCreator {
 
         return new Invoker.Builder()
                 .baseUrl("https://www.baidu.com/")
-                .callFactory(new OkHttpCallFactory(clientBuilder.build())) // call实体
+//                .callFactory(mCallFactory) // call实体
                 .sourceFactory(mSourceFactory) // response层数据
-                .parserFactory(new FastJsonParserFactory()) // data层数据
-                .failureFactory(new TestFailureFactory()) // failure数据
+//                .parserFactory(new FastJsonParserFactory()) // data层数据
+//                .failureFactory(new TestFailureFactory()) // failure数据
                 .debug(BuildConfig.DEBUG)
                 .build();
     }

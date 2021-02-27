@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.daiwj.invoker.annotation.Creator;
+import com.daiwj.invoker.annotation.Provider;
 import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.call.okhttp3.OkHttpFailureFactory;
 import com.daiwj.invoker.lifecycle.LifecycleOwnerManager;
@@ -12,12 +12,12 @@ import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.ResultExecutor;
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.InvokerCreator;
+import com.daiwj.invoker.runtime.InvokerProvider;
 import com.daiwj.invoker.runtime.InvokerLog;
 import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.IFailure;
 import com.daiwj.invoker.runtime.MethodVisitor;
-import com.daiwj.invoker.runtime.Parser;
+import com.daiwj.invoker.runtime.ParserFactory;
 import com.daiwj.invoker.runtime.ISource;
 import com.daiwj.invoker.runtime.SourceFactory;
 import com.daiwj.invoker.runtime.StringParser;
@@ -43,7 +43,7 @@ public final class Invoker {
     private String mBaseUrl;
     private Call.CallFactory mCallFactory;
     private SourceFactory<? extends ISource> mSourceFactory;
-    private Parser.Factory mParserFactory;
+    private ParserFactory mParserFactory;
     private DataParser mDataParser;
     private StringParser mStringParser;
     private IFailure.Factory mFailureFactory;
@@ -100,7 +100,7 @@ public final class Invoker {
         return mSourceFactory;
     }
 
-    public Parser.Factory getParserFactory() {
+    public ParserFactory getParserFactory() {
         return mParserFactory;
     }
 
@@ -129,7 +129,7 @@ public final class Invoker {
         private String mBaseUrl;
         private Call.CallFactory mCallFactory = new OkHttpCallFactory();
         private SourceFactory<? extends ISource> mSourceFactory;
-        private Parser.Factory mParserFactory = new GsonParserFactory();
+        private ParserFactory mParserFactory = new GsonParserFactory();
         private IFailure.Factory mFailureFactory = OkHttpFailureFactory.DEFAULT;
 
         public Builder debug(boolean debug) {
@@ -152,7 +152,7 @@ public final class Invoker {
             return this;
         }
 
-        public Builder parserFactory(Parser.Factory factory) {
+        public Builder parserFactory(ParserFactory factory) {
             mParserFactory = factory;
             return this;
         }
@@ -184,31 +184,31 @@ public final class Invoker {
         final static Map<String, Object> mApiMap = new HashMap<>();
 
         static <Api> Api provide(Class<Api> c) {
-            final Creator creator = c.getAnnotation(Creator.class);
-            InvokerUtil.checkNull(creator, "@Creator not found on class: " + c.getName());
+            final Provider provider = c.getAnnotation(Provider.class);
+            InvokerUtil.checkNull(provider, "@Provider not found on class: " + c.getName());
 
-            final Class<? extends InvokerCreator> creatorClass = creator.value();
+            final Class<? extends InvokerProvider> providerClass = provider.value();
 
-            String apiName = creator.name();
+            String apiName = provider.name();
             if (TextUtils.isEmpty(apiName)) {
                 apiName = c.getName();
             }
             Object api = mApiMap.get(apiName);
             if (api == null) {
-                api = create(c, creatorClass);
+                api = create(c, providerClass);
                 mApiMap.put(apiName, api);
             }
             return (Api) api;
         }
 
-        static <Api> Api create(Class<Api> c, Class<? extends InvokerCreator> factoryClass) {
+        static <Api> Api create(Class<Api> c, Class<? extends InvokerProvider> providerClass) {
             try {
-                final String factoryClassName = factoryClass.getName();
-                Invoker client = mFactoryMap.get(factoryClassName);
+                final String className = providerClass.getName();
+                Invoker client = mFactoryMap.get(className);
                 if (client == null) {
-                    InvokerCreator factory = factoryClass.newInstance();
-                    client = factory.create();
-                    mFactoryMap.put(factoryClassName, client);
+                    InvokerProvider provider = providerClass.newInstance();
+                    client = provider.provide();
+                    mFactoryMap.put(className, client);
                 }
                 return client.create(c);
             } catch (Exception e) {

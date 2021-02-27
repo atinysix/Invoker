@@ -2,7 +2,7 @@ package com.daiwj.invoker.parser;
 
 import com.alibaba.fastjson.JSON;
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.Parser;
+import com.daiwj.invoker.runtime.ParserFactory;
 import com.daiwj.invoker.runtime.StringParser;
 
 import java.lang.reflect.Type;
@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 /**
  * author: daiwj on 2020/12/5 12:13
  */
-public class FastJsonParserFactory implements Parser.Factory {
+public class FastJsonParserFactory implements ParserFactory {
 
     @Override
     public DataParser dataParser() {

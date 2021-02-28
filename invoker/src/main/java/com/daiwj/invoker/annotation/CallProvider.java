@@ -1,6 +1,6 @@
 package com.daiwj.invoker.annotation;
 
-import com.daiwj.invoker.runtime.ISource;
+import com.daiwj.invoker.runtime.Call;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SourceFactory {
+public @interface CallProvider {
 
-    Class<? extends ISource> value();
+    Class<? extends Call.CallFactory> value();
 
 }

@@ -1,7 +1,9 @@
 package com.daiwj.invoker.runtime;
 
+import android.text.TextUtils;
+
 import com.daiwj.invoker.Invoker;
-import com.daiwj.invoker.annotation.CallFactory;
+import com.daiwj.invoker.annotation.CallProvider;
 import com.daiwj.invoker.annotation.FileParam;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
@@ -9,7 +11,7 @@ import com.daiwj.invoker.annotation.Host;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.ParamMap;
 import com.daiwj.invoker.annotation.Post;
-import com.daiwj.invoker.annotation.SourceFactory;
+import com.daiwj.invoker.annotation.SourceProvider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -33,6 +35,7 @@ public final class MethodVisitor<Data> {
     protected Class<?> mCallerType;
     protected Class<? extends ISource> mSourceType;
     protected Type mDataType;
+    protected Call.CallFactory mCallFactory;
 
     protected String mHttpMethod = "GET";
     protected String mBaseUrl;
@@ -45,10 +48,12 @@ public final class MethodVisitor<Data> {
     private List<RequestParam> mRequestParams;
     private List<FilePart> mFileParts;
 
-    protected Call.CallFactory mCallFactory;
-
     public Invoker getClient() {
         return mClient;
+    }
+
+    public String getApiName() {
+        return mApiName == null ? "" : mApiName;
     }
 
     public Method getMethod() {
@@ -58,17 +63,11 @@ public final class MethodVisitor<Data> {
     private void setMethod(Method method) {
         mMethod = method;
 
-        final Host host = method.getDeclaringClass().getAnnotation(Host.class);
-        if (host != null) {
-            IMethodAnnotationHandler.HOST.handle(host, this);
-        }
+        final Class<?> declaringClass = method.getDeclaringClass();
 
-        final SourceFactory source = method.getDeclaringClass().getAnnotation(SourceFactory.class);
-        if (source != null) {
-            IMethodAnnotationHandler.SOURCE.handle(source, this);
-        }
-
-        mApiName = method.getDeclaringClass().getSimpleName();
+        mApiName = declaringClass.getSimpleName();
+        mCallerType = method.getReturnType();
+        mDataType = InvokerUtil.getActualGenericType(method.getGenericReturnType());
 
         mMethodAnnotations = method.getAnnotations();
         mParamsAnnotations = method.getParameterAnnotations();
@@ -82,19 +81,45 @@ public final class MethodVisitor<Data> {
                 IMethodAnnotationHandler.POST.handle(a, this);
             } else if (a instanceof Header) {
                 IMethodAnnotationHandler.HEADER.handle(a, this);
-            } else if (a instanceof SourceFactory) {
+            } else if (a instanceof SourceProvider) {
                 IMethodAnnotationHandler.SOURCE.handle(a, this);
-            } else if (a instanceof CallFactory) {
+            } else if (a instanceof CallProvider) {
                 IMethodAnnotationHandler.CALL.handle(a, this);
             }
         }
 
-        mCallerType = method.getReturnType();
-        mDataType = InvokerUtil.getActualGenericType(method.getGenericReturnType());
+        if (TextUtils.isEmpty(mBaseUrl)) {
+            final Host host = declaringClass.getAnnotation(Host.class);
+            if (host != null && TextUtils.isEmpty(mBaseUrl)) {
+                IMethodAnnotationHandler.HOST.handle(host, this);
+            }
+        }
+
+        if (mSourceType == null) {
+            final SourceProvider provider = declaringClass.getAnnotation(SourceProvider.class);
+            if (provider != null) {
+                IMethodAnnotationHandler.SOURCE.handle(provider, this);
+            }
+        }
+
+        if (mCallFactory == null) {
+            final CallProvider provider = declaringClass.getAnnotation(CallProvider.class);
+            if (provider != null) {
+                IMethodAnnotationHandler.CALL.handle(provider, this);
+            }
+        }
     }
 
-    public String getApiName() {
-        return mApiName == null ? "" : mApiName;
+    public Class<? extends ISource> getSourceType() {
+        return mSourceType;
+    }
+
+    public Type getDataType() {
+        return mDataType;
+    }
+
+    public Call.CallFactory getCallFactory() {
+        return mCallFactory;
     }
 
     public String getHttpMethod() {
@@ -126,14 +151,6 @@ public final class MethodVisitor<Data> {
             mHeaders = new HashMap<>();
         }
         return mHeaders;
-    }
-
-    public Class<? extends ISource> getSourceType() {
-        return mSourceType;
-    }
-
-    public Type getDataType() {
-        return mDataType;
     }
 
     public void setArgs(Object[] args) {
@@ -173,10 +190,6 @@ public final class MethodVisitor<Data> {
 
     public List<FilePart> getFileParts() {
         return mFileParts;
-    }
-
-    public Call.CallFactory getCallFactory() {
-        return mCallFactory;
     }
 
     public Caller<Data> createCaller() throws Exception {
@@ -245,11 +258,12 @@ public final class MethodVisitor<Data> {
 
             visitor.mClient = mOrigin.mClient;
 
-            visitor.mMethod = mOrigin.mMethod;
             visitor.mApiName = mOrigin.mApiName;
+            visitor.mMethod = mOrigin.mMethod;
             visitor.mCallerType = mTargetClassType;
             visitor.mSourceType = mOrigin.mSourceType;
             visitor.mDataType = mTargetDataType;
+            visitor.mCallFactory = mOrigin.mCallFactory;
 
             visitor.mHttpMethod = mOrigin.mHttpMethod;
             visitor.mBaseUrl = mOrigin.mBaseUrl;
@@ -261,8 +275,6 @@ public final class MethodVisitor<Data> {
             visitor.mArgs = mOrigin.mArgs;
             visitor.mRequestParams = mOrigin.mRequestParams;
             visitor.mFileParts = mOrigin.mFileParts;
-
-            visitor.mCallFactory = mOrigin.mCallFactory;
 
             return visitor;
         }

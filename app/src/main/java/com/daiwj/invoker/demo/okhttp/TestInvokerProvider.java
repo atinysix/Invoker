@@ -1,13 +1,9 @@
 package com.daiwj.invoker.demo.okhttp;
 
 import com.daiwj.invoker.Invoker;
-import com.daiwj.invoker.call.okhttp3.OkHttpCall;
-import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.demo.BuildConfig;
 import com.daiwj.invoker.demo.okhttp.extra.TestLogInterceptor;
 import com.daiwj.invoker.demo.okhttp.extra.TestRequestInterceptor;
-import com.daiwj.invoker.runtime.Call;
-import com.daiwj.invoker.runtime.Caller;
 import com.daiwj.invoker.runtime.InvokerProvider;
 import com.daiwj.invoker.runtime.SourceFactory;
 

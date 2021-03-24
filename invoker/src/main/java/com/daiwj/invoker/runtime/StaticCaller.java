@@ -24,8 +24,8 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public Invoker getClient() {
-        return mVisitor.getClient();
+    public Invoker getInvoker() {
+        return mVisitor.getInvoker();
     }
 
     @Override
@@ -59,7 +59,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     public Call<Data> newCall() {
         Call.CallFactory factory = getMethodVisitor().getCallFactory();
         if (factory == null) {
-            factory = getClient().getCallFactory();
+            factory = getInvoker().getCallFactory();
         }
         return (Call<Data>) factory.newCall(this);
     }
@@ -73,7 +73,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     @Override
     public final <F extends IFailure> void call(Context context, Callback<Data, F> callback) {
         if (context != null && callback != null) {
-            mLifecycleOwner = getClient().getLifecycleOwnerManager().findOrCreate(context);
+            mLifecycleOwner = getInvoker().getLifecycleOwnerManager().findOrCreate(context);
             if (mLifecycleOwner != null) {
                 mLifecycleOwner.bind(this);
             }
@@ -85,7 +85,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     @Override
     public final <F extends IFailure> void call(Fragment fragment, Callback<Data, F> callback) {
         if (fragment != null && callback != null) {
-            mLifecycleOwner = getClient().getLifecycleOwnerManager().findOrCreate(fragment);
+            mLifecycleOwner = getInvoker().getLifecycleOwnerManager().findOrCreate(fragment);
             if (mLifecycleOwner != null) {
                 mLifecycleOwner.bind(this);
             }
@@ -97,7 +97,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
 
     @Override
     public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
-        mCall = (Call<Data>) getClient().getCallFactory().newCall(this);
+        mCall = (Call<Data>) getInvoker().getCallFactory().newCall(this);
         return mCall.callSync();
     }
 

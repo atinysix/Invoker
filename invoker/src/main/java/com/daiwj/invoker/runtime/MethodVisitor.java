@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public final class MethodVisitor<Data> {
 
-    private Invoker mClient;
+    private Invoker mInvoker;
 
     protected Method mMethod;
     protected String mApiName;
@@ -48,8 +48,8 @@ public final class MethodVisitor<Data> {
     private List<RequestParam> mRequestParams;
     private List<FilePart> mFileParts;
 
-    public Invoker getClient() {
-        return mClient;
+    public Invoker getInvoker() {
+        return mInvoker;
     }
 
     public String getApiName() {
@@ -213,12 +213,12 @@ public final class MethodVisitor<Data> {
     }
 
     public static class Builder<Data> {
-        private Invoker mClient;
+        private Invoker mInvoker;
         private Method mMethod;
         private Object[] mArgs;
 
-        public Builder(Invoker client, Method method, Object[] args) {
-            mClient = client;
+        public Builder(Invoker invoker, Method method, Object[] args) {
+            mInvoker = invoker;
             mMethod = method;
             mArgs = args;
         }
@@ -226,7 +226,7 @@ public final class MethodVisitor<Data> {
         public MethodVisitor<Data> build() {
             final MethodVisitor<Data> visitor = new MethodVisitor<>();
 
-            visitor.mClient = mClient;
+            visitor.mInvoker = mInvoker;
 
             visitor.setMethod(mMethod);
             visitor.setArgs(mArgs);
@@ -256,7 +256,7 @@ public final class MethodVisitor<Data> {
         public <T> MethodVisitor<T> copy() {
             final MethodVisitor<T> visitor = new MethodVisitor<>();
 
-            visitor.mClient = mOrigin.mClient;
+            visitor.mInvoker = mOrigin.mInvoker;
 
             visitor.mApiName = mOrigin.mApiName;
             visitor.mMethod = mOrigin.mMethod;

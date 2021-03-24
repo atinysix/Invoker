@@ -78,7 +78,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 }
 
                 final Result origin = new Result(caller);
-                if (caller.getClient().isDebug()) {
+                if (caller.getInvoker().isDebug()) {
                     origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
                 } else {
                     origin.setResponse(new OkHttpResponse(response));
@@ -117,7 +117,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
             final Response response = mCall.execute();
 
             final Result origin = new Result(caller);
-            if (caller.getClient().isDebug()) {
+            if (caller.getInvoker().isDebug()) {
                 origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
             } else {
                 origin.setResponse(new OkHttpResponse(response));
@@ -158,7 +158,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
 
         final Request.Builder requestBuilder = new Request.Builder();
 
-        String clientBaseUrl = visitor.getClient().getBaseUrl();
+        String clientBaseUrl = visitor.getInvoker().getBaseUrl();
         String methodBaseUrl = visitor.getBaseUrl();
         String relativeUrl = visitor.getRelativeUrl();
 

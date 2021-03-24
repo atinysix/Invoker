@@ -77,8 +77,8 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public Invoker getClient() {
-        return mOrigin.getClient();
+    public Invoker getInvoker() {
+        return mOrigin.getInvoker();
     }
 
     @Override

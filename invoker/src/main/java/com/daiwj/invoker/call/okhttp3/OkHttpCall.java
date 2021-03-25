@@ -1,5 +1,6 @@
 package com.daiwj.invoker.call.okhttp3;
 
+import com.daiwj.invoker.runtime.IResponse;
 import com.daiwj.invoker.runtime.ISource;
 import com.daiwj.invoker.runtime.InvokerLog;
 import com.daiwj.invoker.runtime.CallException;
@@ -49,7 +50,8 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
     public final void call(Callback<Data, ?> callback) {
         final Caller<Data> caller = getCaller();
 
-        mCall = mOkHttpClient.newCall(onResolveOriginRequest(makeOriginRequest()));
+        final Request resolved = onResolveOriginRequest(makeOriginRequest());
+        mCall = mOkHttpClient.newCall(resolved);
         mCall.enqueue(new okhttp3.Callback() {
 
             @Override
@@ -78,20 +80,22 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 }
 
                 final Result origin = new Result(caller);
+                final IResponse wrapper;
                 if (caller.getInvoker().isDebug()) {
-                    origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
+                    wrapper = new OkHttpResponse(response, caller.getMocker());
                 } else {
-                    origin.setResponse(new OkHttpResponse(response));
+                    wrapper = new OkHttpResponse(response);
                 }
-                final String content = origin.getResponse().getContent();
-                final ISource source = parseSource(content);
+                origin.setResponse(wrapper);
+
+                final ISource source = parseSource(wrapper);
 
                 if (caller instanceof SourceCaller) {
-                    final SourceCaller caller = (SourceCaller) getCaller();
-                    if (caller.isDataOnly()) {
+                    final SourceCaller sourceCaller = (SourceCaller) getCaller();
+                    if (sourceCaller.isDataOnly()) {
                         executeSuccess(callback, new SuccessResult<>(origin, source.data()));
                     } else {
-                        executeSuccess(callback, new SuccessResult<>(origin, content));
+                        executeSuccess(callback, new SuccessResult<>(origin, wrapper.getContent()));
                     }
                 } else {
                     final Result result = parseSuccess(origin, source);
@@ -113,24 +117,27 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
         final Caller<Data> caller = getCaller();
 
         try {
-            mCall = mOkHttpClient.newCall(onResolveOriginRequest(makeOriginRequest()));
+            final Request resolved = onResolveOriginRequest(makeOriginRequest());
+            mCall = mOkHttpClient.newCall(resolved);
             final Response response = mCall.execute();
 
             final Result origin = new Result(caller);
+            final IResponse wrapper;
             if (caller.getInvoker().isDebug()) {
-                origin.setResponse(new OkHttpResponse(response, caller.getMocker()));
+                wrapper = new OkHttpResponse(response, caller.getMocker());
             } else {
-                origin.setResponse(new OkHttpResponse(response));
+                wrapper = new OkHttpResponse(response);
             }
-            final String content = origin.getResponse().getContent();
-            final ISource source = parseSource(content);
+            origin.setResponse(wrapper);
+
+            final ISource source = parseSource(wrapper);
 
             if (caller instanceof SourceCaller) {
                 final SourceCaller sourceCaller = (SourceCaller) caller;
                 if (sourceCaller.isDataOnly()) {
                     return new SuccessResult<Data>(origin, (Data) source.data());
                 } else {
-                    return new SuccessResult<Data>(origin, (Data) content);
+                    return new SuccessResult<Data>(origin, (Data) wrapper.getContent());
                 }
             } else {
                 final Result result = parseSuccess(origin, source);

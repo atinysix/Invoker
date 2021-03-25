@@ -34,7 +34,13 @@ public interface OkHttpFailureFactory extends IFailure.Factory {
 
         @Override
         public IFailure create(ISource source) {
-            return null;
+            return new IFailure() {
+
+                @Override
+                public String getMessage() {
+                    return "please custom your failure by implementing OkHttpFailureFactory";
+                }
+            };
         }
     };
 

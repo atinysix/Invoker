@@ -27,13 +27,13 @@ public interface Call<Data> {
 
     IFailure.Factory getFailureFactory();
 
+    ISource parseSource(IResponse response);
+
+    Data parseData(ISource source);
+
     Result parseSuccess(Result origin, ISource source);
 
     FailureResult<?> parseFailure(Result origin, ISource source);
-
-    ISource parseSource(String content);
-
-    Data parseData(ISource source);
 
     interface CallFactory {
 

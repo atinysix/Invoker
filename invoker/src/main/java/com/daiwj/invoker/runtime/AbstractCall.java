@@ -52,12 +52,12 @@ public abstract class AbstractCall<Data> implements Call<Data> {
     }
 
     @Override
-    public ISource parseSource(String content) {
+    public ISource parseSource(IResponse response) {
         Class<?> sourceType = getMethodVisitor().getSourceType();
         if (sourceType == null) {
             sourceType = getSourceFactory().create();
         }
-        return getDataParser().parse(content, sourceType);
+        return getDataParser().parse(response.getContent(), sourceType);
     }
 
     @Override

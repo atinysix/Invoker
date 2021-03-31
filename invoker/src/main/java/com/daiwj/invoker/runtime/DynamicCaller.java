@@ -21,12 +21,12 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     public DynamicCaller<Data> setHttpMethod(String method) {
-        mOrigin.getMethodVisitor().mHttpMethod = method;
+        mOrigin.getMethodVisitor().setHttpMethod(method);
         return this;
     }
 
     public DynamicCaller<Data> setRelativeUrl(String url) {
-        mOrigin.getMethodVisitor().mRelativeUrl = url;
+        mOrigin.getMethodVisitor().setRelativeUrl(url);
         return this;
     }
 
@@ -67,12 +67,12 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     public DynamicCaller<Data> setSourceType(Class<? extends ISource> sourceType) {
-        mOrigin.getMethodVisitor().mSourceType = sourceType;
+        mOrigin.getMethodVisitor().setSourceType(sourceType);
         return this;
     }
 
     public DynamicCaller<Data> setCallFactory(Call.CallFactory factory) {
-        mOrigin.getMethodVisitor().mCallFactory = factory;
+        mOrigin.getMethodVisitor().setCallFactory(factory);
         return this;
     }
 

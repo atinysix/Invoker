@@ -3,7 +3,7 @@ package com.daiwj.invoker.runtime;
 import android.text.TextUtils;
 
 import com.daiwj.invoker.annotation.CallProvider;
-import com.daiwj.invoker.annotation.Host;
+import com.daiwj.invoker.annotation.BaseUrl;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
 import com.daiwj.invoker.annotation.Post;
@@ -23,20 +23,20 @@ public interface IMethodAnnotationHandler {
         @Override
         public void handle(Annotation source, MethodVisitor<?> visitor) {
             Post target = (Post) source;
-            visitor.mHttpMethod = "POST";
-            visitor.mRelativeUrl = target.value();
-            visitor.mJsonBody = target.isJsonBody();
+            visitor.setHttpMethod("POST");
+            visitor.setRelativeUrl(target.value());
+            visitor.setJsonBody(target.isJsonBody());
         }
     };
 
-    IMethodAnnotationHandler HOST = new IMethodAnnotationHandler() {
+    IMethodAnnotationHandler BASE_URL = new IMethodAnnotationHandler() {
 
         @Override
         public void handle(Annotation source, MethodVisitor<?> visitor) {
-            Host target = (Host) source;
+            BaseUrl target = (BaseUrl) source;
             String baseUrl = target.value();
             if (!TextUtils.isEmpty(baseUrl)) {
-                visitor.mBaseUrl = baseUrl;
+                visitor.setBaseUrl(baseUrl);
             }
         }
     };
@@ -46,8 +46,8 @@ public interface IMethodAnnotationHandler {
         @Override
         public void handle(Annotation source, MethodVisitor<?> visitor) {
             Get target = (Get) source;
-            visitor.mHttpMethod = "GET";
-            visitor.mRelativeUrl = target.value();
+            visitor.setHttpMethod("GET");
+            visitor.setRelativeUrl(target.value());
         }
     };
 
@@ -67,7 +67,7 @@ public interface IMethodAnnotationHandler {
         @Override
         public void handle(Annotation source, MethodVisitor<?> visitor) {
             SourceProvider target = (SourceProvider) source;
-            visitor.mSourceType = target.value();
+            visitor.setSourceType(target.value());
         }
     };
 
@@ -77,7 +77,7 @@ public interface IMethodAnnotationHandler {
         public void handle(Annotation source, MethodVisitor<?> visitor) {
             CallProvider target = (CallProvider) source;
             try {
-                visitor.mCallFactory = target.value().newInstance();
+                visitor.setCallFactory(target.value().newInstance());
             } catch (Exception e) {
                 e.printStackTrace();
             }

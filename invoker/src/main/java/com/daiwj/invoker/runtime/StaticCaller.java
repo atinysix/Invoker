@@ -61,12 +61,15 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
         if (factory == null) {
             factory = getInvoker().getCallFactory();
         }
-        return (Call<Data>) factory.newCall(this);
+        mCall = (Call<Data>) factory.newCall(this);
+        return mCall;
     }
 
     @Override
     public final <F extends IFailure> void call(Callback<Data, F> callback) {
-        mCall = newCall();
+        if (mCall == null) {
+            newCall();
+        }
         mCall.call(callback);
     }
 
@@ -78,7 +81,9 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        mCall = newCall();
+        if (mCall == null) {
+            newCall();
+        }
         mCall.call(callback);
     }
 
@@ -90,14 +95,17 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        mCall = newCall();
+        if (mCall == null) {
+            newCall();
+        }
         mCall.call(callback);
-
     }
 
     @Override
     public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
-        mCall = (Call<Data>) getInvoker().getCallFactory().newCall(this);
+        if (mCall == null) {
+            newCall();
+        }
         return mCall.callSync();
     }
 

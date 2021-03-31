@@ -7,7 +7,7 @@ import com.daiwj.invoker.annotation.CallProvider;
 import com.daiwj.invoker.annotation.FileParam;
 import com.daiwj.invoker.annotation.Get;
 import com.daiwj.invoker.annotation.Header;
-import com.daiwj.invoker.annotation.Host;
+import com.daiwj.invoker.annotation.BaseUrl;
 import com.daiwj.invoker.annotation.Param;
 import com.daiwj.invoker.annotation.ParamMap;
 import com.daiwj.invoker.annotation.Post;
@@ -30,21 +30,21 @@ public final class MethodVisitor<Data> {
 
     private Invoker mInvoker;
 
-    protected Method mMethod;
-    protected String mApiName;
-    protected Class<?> mCallerType;
-    protected Class<? extends ISource> mSourceType;
-    protected Type mDataType;
-    protected Call.CallFactory mCallFactory;
+    private Method mMethod;
+    private String mApiName;
+    private Class<?> mCallerType;
+    private Class<? extends ISource> mSourceType;
+    private Type mDataType;
+    private Call.CallFactory mCallFactory;
 
-    protected String mHttpMethod = "GET";
-    protected String mBaseUrl;
-    protected String mRelativeUrl;
-    protected boolean mJsonBody;
-    protected Map<String, String> mHeaders;
-    protected Annotation[] mMethodAnnotations;
-    protected Annotation[][] mParamsAnnotations;
-    protected Object[] mArgs;
+    private String mHttpMethod = "GET";
+    private String mBaseUrl;
+    private String mRelativeUrl;
+    private boolean mJsonBody;
+    private Map<String, String> mHeaders;
+    private Annotation[] mMethodAnnotations;
+    private Annotation[][] mParamsAnnotations;
+    private Object[] mArgs;
     private List<RequestParam> mRequestParams;
     private List<FilePart> mFileParts;
 
@@ -73,8 +73,8 @@ public final class MethodVisitor<Data> {
         mParamsAnnotations = method.getParameterAnnotations();
 
         for (Annotation a : mMethodAnnotations) {
-            if (a instanceof Host) {
-                IMethodAnnotationHandler.HOST.handle(a, this);
+            if (a instanceof BaseUrl) {
+                IMethodAnnotationHandler.BASE_URL.handle(a, this);
             } else if (a instanceof Get) {
                 IMethodAnnotationHandler.GET.handle(a, this);
             } else if (a instanceof Post) {
@@ -89,9 +89,9 @@ public final class MethodVisitor<Data> {
         }
 
         if (TextUtils.isEmpty(mBaseUrl)) {
-            final Host host = declaringClass.getAnnotation(Host.class);
+            final BaseUrl host = declaringClass.getAnnotation(BaseUrl.class);
             if (host != null && TextUtils.isEmpty(mBaseUrl)) {
-                IMethodAnnotationHandler.HOST.handle(host, this);
+                IMethodAnnotationHandler.BASE_URL.handle(host, this);
             }
         }
 
@@ -114,12 +114,20 @@ public final class MethodVisitor<Data> {
         return mSourceType;
     }
 
+    public void setSourceType(Class<? extends ISource> sourceType) {
+        mSourceType = sourceType;
+    }
+
     public Type getDataType() {
         return mDataType;
     }
 
     public Call.CallFactory getCallFactory() {
         return mCallFactory;
+    }
+
+    public void setCallFactory(Call.CallFactory callFactory) {
+        mCallFactory = callFactory;
     }
 
     public String getHttpMethod() {
@@ -134,6 +142,10 @@ public final class MethodVisitor<Data> {
         return mBaseUrl == null ? "" : mBaseUrl;
     }
 
+    public void setBaseUrl(String baseUrl) {
+        mBaseUrl = baseUrl;
+    }
+
     public String getRelativeUrl() {
         return mRelativeUrl == null ? "" : mRelativeUrl;
     }
@@ -144,6 +156,10 @@ public final class MethodVisitor<Data> {
 
     public boolean isJsonBody() {
         return mJsonBody;
+    }
+
+    public void setJsonBody(boolean jsonBody) {
+        mJsonBody = jsonBody;
     }
 
     public Map<String, String> getHeaders() {

@@ -1,7 +1,5 @@
 package com.daiwj.invoker.demo.okhttp;
 
-import android.util.Log;
-
 import com.daiwj.invoker.demo.okhttp.extra.TestHttpCodeInterceptor;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.FailureResult;

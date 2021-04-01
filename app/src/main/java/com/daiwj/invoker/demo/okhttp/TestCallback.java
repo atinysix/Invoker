@@ -48,6 +48,7 @@ public class TestCallback<Data> implements Callback<Data, TestFailure> {
      * 业务失败
      */
     public void onFail(TestFailure failure) {
+
     }
 
     /**

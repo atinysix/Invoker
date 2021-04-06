@@ -54,7 +54,7 @@ public final class Invoker {
 
     public static <T> T invoke(Class<T> c) {
         if (!c.isInterface()) {
-            InvokerUtil.error("cannot provide invoker api for a class type: " + c.getName());
+            InvokerUtil.error("Cannot provide invoker api for a class type: " + c.getName());
         }
         return (T) ApiProvider.provide(c);
     }

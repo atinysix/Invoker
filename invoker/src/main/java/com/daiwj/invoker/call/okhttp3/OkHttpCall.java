@@ -176,12 +176,12 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
             url = HttpUrl.parse(baseUrl);
         }
         if (url == null) {
-            InvokerUtil.error("cannot resolve the base url: " + baseUrl);
+            InvokerUtil.error("Cannot resolve the base url: " + baseUrl);
         }
 
         HttpUrl.Builder urlBuilder = url.newBuilder(relativeUrl);
         if (urlBuilder == null) {
-            InvokerUtil.error("cannot parse the relative url: " + relativeUrl);
+            InvokerUtil.error("Cannot resolve the relative url: " + relativeUrl);
         }
 
         if (headers != null) {

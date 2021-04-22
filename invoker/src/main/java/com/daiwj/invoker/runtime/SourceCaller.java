@@ -3,7 +3,7 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 2020/12/3 13:32
  */
-public class SourceCaller extends StaticCaller<String> {
+public class SourceCaller extends StandardCaller<String> {
 
     private boolean mDataOnly;
 

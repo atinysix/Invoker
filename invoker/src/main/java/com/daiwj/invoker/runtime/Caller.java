@@ -15,9 +15,7 @@ public interface Caller<Data> {
 
     MethodVisitor<Data> getMethodVisitor();
 
-    Caller<Data> copy();
-
-    DynamicCaller<Data> asDynamic();
+    IDynamicCaller<Data> asDynamic();
 
     Caller<Data> mock(String content);
 
@@ -31,7 +29,7 @@ public interface Caller<Data> {
 
     <F extends IFailure> void call(Fragment fragment, Callback<Data, F> callback);
 
-    SuccessResult<Data> callSync() throws CallException, CustomResultException;
+    SuccessResult<Data> callSync() throws CallException;
 
     void cancel();
 

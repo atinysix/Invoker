@@ -5,8 +5,6 @@ package com.daiwj.invoker.runtime;
  */
 public interface ResultExecutor {
 
-    void executeResult(Callback c, Result result);
-
     void executeSuccess(Callback c, SuccessResult<?> success);
 
     void executeFailure(Callback c, FailureResult<?> failure);

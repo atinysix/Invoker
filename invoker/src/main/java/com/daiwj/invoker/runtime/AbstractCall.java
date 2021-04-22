@@ -66,7 +66,7 @@ public abstract class AbstractCall<Data> implements Call<Data> {
     }
 
     @Override
-    public Result parseSuccess(Result origin, ISource source) {
+    public final Result parseSuccess(Result origin, ISource source) {
         if (source.isSuccessful()) {
             return new SuccessResult<>(origin, parseData(source));
         } else {
@@ -85,9 +85,5 @@ public abstract class AbstractCall<Data> implements Call<Data> {
 
     protected final void executeFailure(Callback<?, ?> c, FailureResult<?> result) {
         mCaller.getInvoker().getResultExecutor().executeFailure(c, result);
-    }
-
-    protected final void executeResult(Callback<?, ?> c, Result result) {
-        mCaller.getInvoker().getResultExecutor().executeResult(c, result);
     }
 }

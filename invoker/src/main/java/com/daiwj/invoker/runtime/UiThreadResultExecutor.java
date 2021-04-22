@@ -12,16 +12,6 @@ public class UiThreadResultExecutor implements ResultExecutor {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
-    public void executeResult(Callback c, Result result) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                c.onResult(result);
-            }
-        });
-    }
-
-    @Override
     public void executeSuccess(Callback c, SuccessResult<?> success) {
         mHandler.post(new Runnable() {
             @Override

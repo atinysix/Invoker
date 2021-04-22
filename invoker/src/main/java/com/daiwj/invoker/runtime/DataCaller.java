@@ -3,7 +3,7 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 2020/12/3 13:32
  */
-public class DataCaller<Data> extends StaticCaller<Data> {
+public class DataCaller<Data> extends StandardCaller<Data> {
 
     public DataCaller(MethodVisitor<Data> visitor) {
         super(visitor);

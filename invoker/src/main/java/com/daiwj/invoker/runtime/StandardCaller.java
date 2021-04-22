@@ -2,6 +2,7 @@ package com.daiwj.invoker.runtime;
 
 import android.content.Context;
 
+import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 
 import com.daiwj.invoker.Invoker;
@@ -10,7 +11,7 @@ import com.daiwj.invoker.lifecycle.ILifecycleOwner;
 /**
  * author: daiwj on 2020/12/3 19:13
  */
-public abstract class StaticCaller<Data> implements Caller<Data> {
+public class StandardCaller<Data> implements Caller<Data> {
 
     private MethodVisitor<Data> mVisitor;
     private Mocker mMocker;
@@ -19,7 +20,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
 
     private ILifecycleOwner mLifecycleOwner;
 
-    public StaticCaller(MethodVisitor<Data> visitor) {
+    public StandardCaller(MethodVisitor<Data> visitor) {
         mVisitor = visitor;
     }
 
@@ -34,14 +35,8 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public Caller<Data> copy() {
-        mVisitor = mVisitor.copy();
-        return this;
-    }
-
-    @Override
-    public DynamicCaller<Data> asDynamic() {
-        return new DynamicCaller<Data>(this);
+    public IDynamicCaller<Data> asDynamic() {
+        return new DynamicCaller<>(this);
     }
 
     @Override
@@ -56,7 +51,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public Call<Data> newCall() {
+    public final Call<Data> newCall() {
         Call.CallFactory factory = getMethodVisitor().getCallFactory();
         if (factory == null) {
             factory = getInvoker().getCallFactory();
@@ -102,13 +97,14 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
+    public final SuccessResult<Data> callSync() throws CallException {
         if (mCall == null) {
             newCall();
         }
         return mCall.callSync();
     }
 
+    @CallSuper
     @Override
     public void cancel() {
         mCanceled = true;
@@ -122,6 +118,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
         return mCanceled;
     }
 
+    @CallSuper
     @Override
     public void finish() {
         if (mLifecycleOwner != null) {
@@ -131,7 +128,7 @@ public abstract class StaticCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public String getTag() {
+    public final String getTag() {
         final MethodVisitor<?> visitor = getMethodVisitor();
         return visitor.getApiName() + "." + visitor.getMethod().getName();
     }

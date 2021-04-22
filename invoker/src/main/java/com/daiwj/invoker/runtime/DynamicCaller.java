@@ -12,21 +12,23 @@ import java.util.Map;
 /**
  * author: daiwj on 2/1/21 15:14
  */
-public class DynamicCaller<Data> implements Caller<Data> {
+public class DynamicCaller<Data> implements IDynamicCaller<Data> {
 
     private Caller<Data> mOrigin;
+    private MethodVisitor<Data> mMethodVisitor;
 
     public DynamicCaller(Caller<Data> origin) {
-        mOrigin = origin.copy();
+        mOrigin = origin;
+        mMethodVisitor = origin.getMethodVisitor().copy();
     }
 
     public DynamicCaller<Data> setHttpMethod(String method) {
-        mOrigin.getMethodVisitor().setHttpMethod(method);
+        mMethodVisitor.setHttpMethod(method);
         return this;
     }
 
     public DynamicCaller<Data> setRelativeUrl(String url) {
-        mOrigin.getMethodVisitor().setRelativeUrl(url);
+        mMethodVisitor.setRelativeUrl(url);
         return this;
     }
 
@@ -36,7 +38,7 @@ public class DynamicCaller<Data> implements Caller<Data> {
 
     public DynamicCaller<Data> addParam(String name, String value, boolean encode) {
         final RequestParam param = new RequestParam(name, value, encode);
-        mOrigin.getMethodVisitor().getRequestParams().add(param);
+        mMethodVisitor.getRequestParams().add(param);
         return this;
     }
 
@@ -49,30 +51,30 @@ public class DynamicCaller<Data> implements Caller<Data> {
             final String name = entry.getKey();
             final String value = entry.getValue().toString();
             final RequestParam param = new RequestParam(name, value, encode);
-            mOrigin.getMethodVisitor().getRequestParams().add(param);
+            mMethodVisitor.getRequestParams().add(param);
         }
         return this;
     }
 
     public DynamicCaller<Data> addHeader(String name, String value) {
-        mOrigin.getMethodVisitor().getHeaders().put(name, value);
+        mMethodVisitor.getHeaders().put(name, value);
         return this;
     }
 
     public DynamicCaller<Data> addHeader(Map<String, String> headers) {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
-            mOrigin.getMethodVisitor().getHeaders().put(entry.getKey(), entry.getValue());
+            mMethodVisitor.getHeaders().put(entry.getKey(), entry.getValue());
         }
         return this;
     }
 
     public DynamicCaller<Data> setSourceType(Class<? extends ISource> sourceType) {
-        mOrigin.getMethodVisitor().setSourceType(sourceType);
+        mMethodVisitor.setSourceType(sourceType);
         return this;
     }
 
     public DynamicCaller<Data> setCallFactory(Call.CallFactory factory) {
-        mOrigin.getMethodVisitor().setCallFactory(factory);
+        mMethodVisitor.setCallFactory(factory);
         return this;
     }
 
@@ -83,12 +85,7 @@ public class DynamicCaller<Data> implements Caller<Data> {
 
     @Override
     public MethodVisitor<Data> getMethodVisitor() {
-        return mOrigin.getMethodVisitor();
-    }
-
-    @Override
-    public Caller<Data> copy() {
-        throw new UnsupportedOperationException();
+        return mMethodVisitor;
     }
 
     @Override
@@ -128,7 +125,7 @@ public class DynamicCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public SuccessResult<Data> callSync() throws CallException, CustomResultException {
+    public SuccessResult<Data> callSync() throws CallException {
         return mOrigin.callSync();
     }
 

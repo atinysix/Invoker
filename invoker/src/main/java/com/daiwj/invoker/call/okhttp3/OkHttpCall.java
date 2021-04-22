@@ -1,21 +1,20 @@
 package com.daiwj.invoker.call.okhttp3;
 
-import com.daiwj.invoker.runtime.IResponse;
-import com.daiwj.invoker.runtime.ISource;
-import com.daiwj.invoker.runtime.InvokerLog;
-import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.AbstractCall;
+import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.Caller;
 import com.daiwj.invoker.runtime.FailureResult;
-import com.daiwj.invoker.runtime.Result;
-import com.daiwj.invoker.runtime.SuccessResult;
-import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.FilePart;
+import com.daiwj.invoker.runtime.IResponse;
+import com.daiwj.invoker.runtime.ISource;
+import com.daiwj.invoker.runtime.InvokerLog;
+import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.MethodVisitor;
 import com.daiwj.invoker.runtime.RequestParam;
+import com.daiwj.invoker.runtime.Result;
 import com.daiwj.invoker.runtime.SourceCaller;
-import com.daiwj.invoker.runtime.CustomResultException;
+import com.daiwj.invoker.runtime.SuccessResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,29 +90,28 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 final ISource source = parseSource(wrapper);
 
                 if (caller instanceof SourceCaller) {
+                    final String data;
                     final SourceCaller sourceCaller = (SourceCaller) getCaller();
                     if (sourceCaller.isDataOnly()) {
-                        executeSuccess(callback, new SuccessResult<>(origin, source.data()));
+                        data = source.data();
                     } else {
-                        executeSuccess(callback, new SuccessResult<>(origin, wrapper.getContent()));
+                        data = wrapper.getContent();
                     }
+                    executeSuccess(callback, new SuccessResult<>(origin, data));
                 } else {
                     final Result result = parseSuccess(origin, source);
                     if (result instanceof SuccessResult) {
                         executeSuccess(callback, (SuccessResult<?>) result);
-                    } else if (result instanceof FailureResult) {
-                        executeFailure(callback, (FailureResult<?>) result);
                     } else {
-                        executeResult(callback, result);
+                        executeFailure(callback, (FailureResult<?>) result);
                     }
                 }
             }
-
         });
     }
 
     @Override
-    public final SuccessResult<Data> callSync() throws CallException, CustomResultException {
+    public final SuccessResult<Data> callSync() throws CallException {
         final Caller<Data> caller = getCaller();
 
         try {
@@ -133,23 +131,23 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
             final ISource source = parseSource(wrapper);
 
             if (caller instanceof SourceCaller) {
+                final String data;
                 final SourceCaller sourceCaller = (SourceCaller) caller;
                 if (sourceCaller.isDataOnly()) {
-                    return new SuccessResult<Data>(origin, (Data) source.data());
+                    data = source.data();
                 } else {
-                    return new SuccessResult<Data>(origin, (Data) wrapper.getContent());
+                    data = wrapper.getContent();
                 }
+                return new SuccessResult<Data>(origin, (Data) data);
             } else {
                 final Result result = parseSuccess(origin, source);
                 if (result instanceof SuccessResult) {
                     return (SuccessResult<Data>) result;
-                } else if (result instanceof FailureResult) {
-                    throw new CallException((FailureResult<?>) result);
                 } else {
-                    throw new CustomResultException(result);
+                    throw new CallException((FailureResult<?>) result);
                 }
             }
-        } catch (CallException | CustomResultException e) {
+        } catch (CallException e) {
             throw e;
         } catch (Exception e) {
             throw new CallException(parseFailure(new Result(caller), e));

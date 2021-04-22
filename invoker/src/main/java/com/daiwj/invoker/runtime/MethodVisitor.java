@@ -216,6 +216,9 @@ public final class MethodVisitor<Data> {
         if (Modifier.isAbstract(c.getModifiers())) {
             InvokerUtil.error("Caller cannot be a abstract class: " + c.getName());
         }
+        if (!StandardCaller.class.isAssignableFrom(c)) {
+            InvokerUtil.error("Caller must be a sub class of " + StandardCaller.class.getName());
+        }
         Constructor<?> constructor = c.getConstructor(MethodVisitor.class);
         return (Caller<Data>) constructor.newInstance(this);
     }

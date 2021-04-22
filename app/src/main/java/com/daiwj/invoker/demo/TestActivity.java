@@ -26,8 +26,9 @@ public class TestActivity extends Activity {
             public void onClick(View v) {
                 Invoker.invoke(TestApi.class)
                         .sourceCall("MeepoKing", "123456")
-                        .asDynamic()
                         .mock(Test.success())
+                        .asDynamic()
+                        .addHeader("TestHeader", "TestValue")
                         .call(getActivity(), new TestCallback<String>() {
                             @Override
                             public void onSuccess(SuccessResult<String> result) {

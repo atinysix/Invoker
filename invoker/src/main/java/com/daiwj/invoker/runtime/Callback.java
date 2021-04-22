@@ -6,13 +6,6 @@ package com.daiwj.invoker.runtime;
 public interface Callback<Data, F extends IFailure> {
 
     /**
-     * for custom result
-     *
-     * @param result custom result
-     */
-    void onResult(Result result);
-
-    /**
      * for successful result
      *
      * @param result

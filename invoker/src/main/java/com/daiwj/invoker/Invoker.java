@@ -12,7 +12,7 @@ import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.ResultExecutor;
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.InvokerProvider;
+import com.daiwj.invoker.runtime.InvokerFactory;
 import com.daiwj.invoker.runtime.InvokerLog;
 import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.IFailure;
@@ -187,7 +187,7 @@ public final class Invoker {
             final Provider provider = c.getAnnotation(Provider.class);
             InvokerUtil.checkNull(provider, "@Provider not found on class: " + c.getName());
 
-            final Class<? extends InvokerProvider> providerClass = provider.value();
+            final Class<? extends InvokerFactory> providerClass = provider.value();
 
             String apiName = provider.name();
             if (TextUtils.isEmpty(apiName)) {
@@ -201,13 +201,13 @@ public final class Invoker {
             return (Api) api;
         }
 
-        static <Api> Api create(Class<Api> c, Class<? extends InvokerProvider> providerClass) {
+        static <Api> Api create(Class<Api> c, Class<? extends InvokerFactory> factoryClass) {
             try {
-                final String className = providerClass.getName();
+                final String className = factoryClass.getName();
                 Invoker client = mFactoryMap.get(className);
                 if (client == null) {
-                    InvokerProvider provider = providerClass.newInstance();
-                    client = provider.provide();
+                    InvokerFactory factory = factoryClass.newInstance();
+                    client = factory.create();
                     mFactoryMap.put(className, client);
                 }
                 return client.create(c);

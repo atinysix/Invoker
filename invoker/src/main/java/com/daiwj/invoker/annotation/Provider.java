@@ -1,6 +1,6 @@
 package com.daiwj.invoker.annotation;
 
-import com.daiwj.invoker.runtime.InvokerProvider;
+import com.daiwj.invoker.runtime.InvokerFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,6 +16,6 @@ public @interface Provider {
 
     String name() default "";
 
-    Class<? extends InvokerProvider> value();
+    Class<? extends InvokerFactory> value();
 
 }

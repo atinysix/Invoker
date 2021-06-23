@@ -10,7 +10,7 @@ import com.daiwj.invoker.parser.FastJsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
 import com.daiwj.invoker.runtime.IFailure;
 import com.daiwj.invoker.runtime.ISource;
-import com.daiwj.invoker.runtime.InvokerProvider;
+import com.daiwj.invoker.runtime.InvokerFactory;
 import com.daiwj.invoker.runtime.SourceFactory;
 
 import java.net.SocketTimeoutException;
@@ -20,10 +20,10 @@ import okhttp3.OkHttpClient;
 /**
  * author: daiwj on 2020/12/4 10:50
  */
-public class TestInvokerProvider implements InvokerProvider {
+public class TestInvokerFactory implements InvokerFactory {
 
     @Override
-    public Invoker provide() {
+    public Invoker create() {
         final Call.CallFactory callFactory = new OkHttpCallFactory() {
 
             @Override

@@ -21,8 +21,6 @@ public interface Caller<Data> {
 
     Mocker getMocker();
 
-    Call<Data> newCall();
-
     <F extends IFailure> void call(Callback<Data, F> callback);
 
     <F extends IFailure> void call(Context context, Callback<Data, F> callback);

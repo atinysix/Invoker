@@ -8,16 +8,16 @@ import okhttp3.ResponseBody;
 /**
  * author: daiwj on 2/3/21 14:23
  */
-class OkContentResponse implements ContentResponse {
+class OkHttpResponse implements ContentResponse {
 
     private okhttp3.Response mResponse;
     private String mContent;
 
-    public OkContentResponse(okhttp3.Response response) {
+    public OkHttpResponse(okhttp3.Response response) {
         this(response, null);
     }
 
-    public OkContentResponse(okhttp3.Response response, Mocker mocker) {
+    public OkHttpResponse(okhttp3.Response response, Mocker mocker) {
         mResponse = response;
 
         if (mocker != null) {

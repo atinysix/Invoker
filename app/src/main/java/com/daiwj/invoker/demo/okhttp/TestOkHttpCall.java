@@ -1,7 +1,6 @@
 package com.daiwj.invoker.demo.okhttp;
 
 import com.daiwj.invoker.call.okhttp3.OkHttpCall;
-import com.daiwj.invoker.demo.Test;
 import com.daiwj.invoker.runtime.Caller;
 import com.daiwj.invoker.runtime.FailureResult;
 import com.daiwj.invoker.runtime.ISource;
@@ -10,17 +9,18 @@ import com.daiwj.invoker.runtime.Result;
 import okhttp3.OkHttpClient;
 
 /**
- * desc:
+ * desc: 自定义OkHttpCall
+ *
  * author: daiwj
  */
-public class TestOkHttpCall extends OkHttpCall<Test> {
+public class TestOkHttpCall<Data> extends OkHttpCall<Data> {
 
-    public TestOkHttpCall(Caller<Test> caller, OkHttpClient client) {
+    public TestOkHttpCall(Caller<Data> caller, OkHttpClient client) {
         super(caller, client);
     }
 
     @Override
-    public Test parseData(ISource source) {
+    public Data parseData(ISource source) {
         return super.parseData(source);
     }
 

@@ -50,22 +50,20 @@ public class StandardCaller<Data> implements Caller<Data> {
         return mMocker;
     }
 
-    @Override
-    public final Call<Data> newCall() {
-        Call.CallFactory factory = getMethodVisitor().getCallFactory();
-        if (factory == null) {
-            factory = getClient().getCallFactory();
+    private Call<Data> newCall() {
+        if (mCall == null) {
+            Call.CallFactory factory = getMethodVisitor().getCallFactory();
+            if (factory == null) {
+                factory = getClient().getCallFactory();
+            }
+            mCall = (Call<Data>) factory.newCall(this);
         }
-        mCall = (Call<Data>) factory.newCall(this);
         return mCall;
     }
 
     @Override
     public final <F extends IFailure> void call(Callback<Data, F> callback) {
-        if (mCall == null) {
-            newCall();
-        }
-        mCall.call(callback);
+        newCall().call(callback);
     }
 
     @Override
@@ -76,10 +74,7 @@ public class StandardCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        if (mCall == null) {
-            newCall();
-        }
-        mCall.call(callback);
+        newCall().call(callback);
     }
 
     @Override
@@ -90,18 +85,12 @@ public class StandardCaller<Data> implements Caller<Data> {
                 mLifecycleOwner.bind(this);
             }
         }
-        if (mCall == null) {
-            newCall();
-        }
-        mCall.call(callback);
+        newCall().call(callback);
     }
 
     @Override
     public final SuccessResult<Data> callSync() throws CallException {
-        if (mCall == null) {
-            newCall();
-        }
-        return mCall.callSync();
+        return newCall().callSync();
     }
 
     @CallSuper

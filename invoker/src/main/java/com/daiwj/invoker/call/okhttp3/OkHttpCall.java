@@ -49,8 +49,8 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
     public final void call(Callback<Data, ?> callback) {
         final Caller<Data> caller = getCaller();
 
-        final Request resolved = onRequestCreated(createRequest());
-        mCall = mOkHttpClient.newCall(resolved);
+        final Request request = onRequestCreated(createRequest());
+        mCall = mOkHttpClient.newCall(request);
         mCall.enqueue(new okhttp3.Callback() {
 
             @Override
@@ -79,14 +79,14 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 }
 
                 final Result origin = new Result(caller);
-                final ContentResponse wrapper;
+                final OkHttpResponse okHttpResponse;
                 if (caller.getClient().isDebug()) {
-                    wrapper = new OkContentResponse(response, caller.getMocker());
+                    okHttpResponse = new OkHttpResponse(response, caller.getMocker());
                 } else {
-                    wrapper = new OkContentResponse(response);
+                    okHttpResponse = new OkHttpResponse(response);
                 }
 
-                final ISource source = parseSource(wrapper);
+                final ISource source = parseSource(okHttpResponse);
 
                 if (caller instanceof SourceCaller) {
                     final String data;
@@ -94,7 +94,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                     if (sourceCaller.isDataOnly()) {
                         data = source.data();
                     } else {
-                        data = wrapper.getHttpContent();
+                        data = okHttpResponse.getHttpContent();
                     }
                     executeSuccess(callback, new SuccessResult<>(origin, data));
                 } else {
@@ -118,22 +118,22 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
             mCall = mOkHttpClient.newCall(resolved);
             final Response response = mCall.execute();
 
-            final OkContentResponse wrapper;
+            final OkHttpResponse okHttpResponse;
             if (caller.getClient().isDebug()) {
-                wrapper = new OkContentResponse(response, caller.getMocker());
+                okHttpResponse = new OkHttpResponse(response, caller.getMocker());
             } else {
-                wrapper = new OkContentResponse(response);
+                okHttpResponse = new OkHttpResponse(response);
             }
-            final Result origin = new Result(caller, wrapper);
+            final Result origin = new Result(caller, okHttpResponse);
 
-            final ISource source = parseSource(wrapper);
+            final ISource source = parseSource(okHttpResponse);
             if (caller instanceof SourceCaller) {
                 final String data;
                 final SourceCaller sourceCaller = (SourceCaller) caller;
                 if (sourceCaller.isDataOnly()) {
                     data = source.data();
                 } else {
-                    data = wrapper.getHttpContent();
+                    data = okHttpResponse.getHttpContent();
                 }
                 return new SuccessResult<Data>(origin, (Data) data);
             } else {

@@ -8,6 +8,7 @@ import com.daiwj.invoker.demo.okhttp.extra.TestLogInterceptor;
 import com.daiwj.invoker.demo.okhttp.extra.TestRequestInterceptor;
 import com.daiwj.invoker.parser.FastJsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
+import com.daiwj.invoker.runtime.Caller;
 import com.daiwj.invoker.runtime.IFailure;
 import com.daiwj.invoker.runtime.ISource;
 import com.daiwj.invoker.runtime.InvokerFactory;
@@ -33,6 +34,11 @@ public class TestInvokerFactory implements InvokerFactory {
                         .addInterceptor(new TestLogInterceptor()) //设置log拦截器
                         .retryOnConnectionFailure(false);//错误重连
                 return builder.build();
+            }
+
+            @Override
+            public Call<?> newCall(Caller<?> caller, OkHttpClient client) {
+                return new TestOkHttpCall<>(caller, client);
             }
         };
 

@@ -3,12 +3,17 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 1/16/21 21:23
  */
-public class Result {
+public class Result implements ResponseAccess {
     private Caller<?> mCaller;
-    private IResponse mResponse;
+    private ResponseAccess mResponse;
 
     public Result(Caller<?> caller) {
         mCaller = caller;
+    }
+
+    public Result(Caller<?> caller, ResponseAccess response) {
+        mCaller = caller;
+        mResponse = response;
     }
 
     public Result(Result origin) {
@@ -16,15 +21,22 @@ public class Result {
         mResponse = origin.mResponse;
     }
 
-    public <Data> Caller<Data> getCaller() {
-        return (Caller<Data>) mCaller;
+    public Caller<?> getCaller() {
+        return mCaller;
     }
 
-    public IResponse getResponse() {
-        return mResponse;
+    @Override
+    public int getHttpCode() {
+        return mResponse != null ? mResponse.getHttpCode() : -1;
     }
 
-    public void setResponse(IResponse response) {
-        mResponse = response;
+    @Override
+    public String getHttpMessage() {
+        return mResponse != null ? mResponse.getHttpMessage() : "";
+    }
+
+    @Override
+    public String getHttpHeader(String name) {
+        return mResponse != null ? mResponse.getHttpHeader(name) : "";
     }
 }

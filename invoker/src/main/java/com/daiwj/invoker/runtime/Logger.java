@@ -8,30 +8,30 @@ import com.daiwj.invoker.Invoker;
 /**
  * author: daiwj on 1/9/21 16:02
  */
-public class InvokerLog {
+public class Logger {
 
     private static String TAG = Invoker.class.getSimpleName();
 
-    private static boolean debug = BuildConfig.DEBUG;
+    private static boolean sDebug = BuildConfig.DEBUG;
 
     public static void setDebug(boolean debug) {
-        InvokerLog.debug = debug;
+        Logger.sDebug = debug;
     }
 
     public static void d(String tag, String message) {
-        if (debug) {
+        if (sDebug) {
             Log.d(TAG + "_" + tag, message);
         }
     }
 
     public static void w(String tag, String message) {
-        if (debug) {
+        if (sDebug) {
             Log.w(TAG + "_" + tag, message);
         }
     }
 
     public static void e(String tag, String message) {
-        if (debug) {
+        if (sDebug) {
             Log.e(TAG + "_" + tag, message);
         }
     }

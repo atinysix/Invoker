@@ -27,7 +27,7 @@ public class TestInvokerFactory implements InvokerFactory {
         final Call.CallFactory callFactory = new OkHttpCallFactory() {
 
             @Override
-            protected OkHttpClient createClient() {
+            protected OkHttpClient createOkHttpClient() {
                 final OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .addInterceptor(new TestRequestInterceptor())
                         .addInterceptor(new TestLogInterceptor()) //设置log拦截器
@@ -39,19 +39,12 @@ public class TestInvokerFactory implements InvokerFactory {
         final SourceFactory<TestSource> sourceFactory = new SourceFactory<TestSource>() {
 
             @Override
-            public Class<TestSource> create() {
+            public Class<TestSource> getSourceType() {
                 return TestSource.class;
             }
         };
 
         final OkHttpFailureFactory failureFactory = new OkHttpFailureFactory() {
-
-            @Override
-            public IFailure create(String message) {
-                TestFailure failure = new TestFailure();
-                failure.setMessage(message);
-                return failure;
-            }
 
             @Override
             public IFailure create(ISource source) {

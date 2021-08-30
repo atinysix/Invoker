@@ -24,7 +24,7 @@ public interface IParamAnnotationHandler<T> {
             Param target = (Param) source;
             String name = target.value();
             if (TextUtils.isEmpty(name)) {
-                InvokerUtil.error("@Param: name cannot be null!");
+                Utils.error("@Param: name cannot be null!");
             }
             String value = arg != null ? arg.toString() : null;
             boolean encode = target.encode();
@@ -42,7 +42,7 @@ public interface IParamAnnotationHandler<T> {
                 return;
             }
             if (!(arg instanceof Map)) {
-                InvokerUtil.error("@ParamMap: value must be a sub type of Map!");
+                Utils.error("@ParamMap: value must be a sub type of Map!");
             }
             Map<String, ?> map = (Map<String, ?>) arg;
             for (Map.Entry<String, ?> entry : map.entrySet()) {

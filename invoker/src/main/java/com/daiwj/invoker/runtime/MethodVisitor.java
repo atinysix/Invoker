@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public final class MethodVisitor<Data> {
 
-    private Invoker mInvoker;
+    private Invoker mClient;
 
     private Method mMethod;
     private String mApiName;
@@ -48,8 +48,8 @@ public final class MethodVisitor<Data> {
     private List<RequestParam> mRequestParams;
     private List<FilePart> mFileParts;
 
-    public Invoker getInvoker() {
-        return mInvoker;
+    public Invoker getClient() {
+        return mClient;
     }
 
     public String getApiName() {
@@ -67,7 +67,7 @@ public final class MethodVisitor<Data> {
 
         mApiName = declaringClass.getSimpleName();
         mCallerType = method.getReturnType();
-        mDataType = InvokerUtil.getActualGenericType(method.getGenericReturnType());
+        mDataType = Utils.getActualGenericType(method.getGenericReturnType());
 
         mMethodAnnotations = method.getAnnotations();
         mParamsAnnotations = method.getParameterAnnotations();
@@ -188,14 +188,14 @@ public final class MethodVisitor<Data> {
                     containsParam = true;
                 } else if (a instanceof FileParam) {
                     if ("GET".equals(mHttpMethod)) {
-                        InvokerUtil.error("@File is not supported by @Get in method: " + mMethod.getName());
+                        Utils.error("@File is not supported by @Get in method: " + mMethod.getName());
                     }
                     IParamAnnotationHandler.FILE.handle(a, args[i], mFileParts);
                     containsParam = true;
                 }
             }
             if (!containsParam) {
-                InvokerUtil.error("no parameter annotation was found in method: " + mMethod.getName());
+                Utils.error("No parameter annotation was found in method: " + mMethod.getName());
             }
         }
     }
@@ -211,13 +211,13 @@ public final class MethodVisitor<Data> {
     public Caller<Data> createCaller() throws Exception {
         Class<?> c = Class.forName(mCallerType.getName());
         if (Modifier.isInterface(c.getModifiers())) {
-            InvokerUtil.error("Caller cannot be a interface: " + c.getName());
+            Utils.error("Caller cannot be a interface: " + c.getName());
         }
         if (Modifier.isAbstract(c.getModifiers())) {
-            InvokerUtil.error("Caller cannot be a abstract class: " + c.getName());
+            Utils.error("Caller cannot be a abstract class: " + c.getName());
         }
         if (!StandardCaller.class.isAssignableFrom(c)) {
-            InvokerUtil.error("Caller must be a sub class of " + StandardCaller.class.getName());
+            Utils.error("Caller must be a sub class of " + StandardCaller.class.getName());
         }
         Constructor<?> constructor = c.getConstructor(MethodVisitor.class);
         return (Caller<Data>) constructor.newInstance(this);
@@ -232,12 +232,12 @@ public final class MethodVisitor<Data> {
     }
 
     public static class Builder<Data> {
-        private Invoker mInvoker;
+        private Invoker mClient;
         private Method mMethod;
         private Object[] mArgs;
 
-        public Builder(Invoker invoker, Method method, Object[] args) {
-            mInvoker = invoker;
+        public Builder(Invoker client, Method method, Object[] args) {
+            mClient = client;
             mMethod = method;
             mArgs = args;
         }
@@ -245,7 +245,7 @@ public final class MethodVisitor<Data> {
         public MethodVisitor<Data> build() {
             final MethodVisitor<Data> visitor = new MethodVisitor<>();
 
-            visitor.mInvoker = mInvoker;
+            visitor.mClient = mClient;
 
             visitor.setMethod(mMethod);
             visitor.setArgs(mArgs);
@@ -269,13 +269,13 @@ public final class MethodVisitor<Data> {
         public Copy(MethodVisitor<?> origin, Class<?> type) {
             mOrigin = origin;
             mTargetClassType = type;
-            mTargetDataType = InvokerUtil.getActualGenericType(type);
+            mTargetDataType = Utils.getActualGenericType(type);
         }
 
         public <T> MethodVisitor<T> copy() {
             final MethodVisitor<T> visitor = new MethodVisitor<>();
 
-            visitor.mInvoker = mOrigin.mInvoker;
+            visitor.mClient = mOrigin.mClient;
 
             visitor.mApiName = mOrigin.mApiName;
             visitor.mMethod = mOrigin.mMethod;

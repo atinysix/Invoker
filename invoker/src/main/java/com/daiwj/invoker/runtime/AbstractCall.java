@@ -33,31 +33,31 @@ public abstract class AbstractCall<Data> implements Call<Data> {
 
     @Override
     public SourceFactory<? extends ISource> getSourceFactory() {
-        return mCaller.getInvoker().getSourceFactory();
+        return mCaller.getClient().getSourceFactory();
     }
 
     @Override
     public DataParser getDataParser() {
-        return mCaller.getInvoker().getDataParser();
+        return mCaller.getClient().getDataParser();
     }
 
     @Override
     public StringParser getJsonStringParser() {
-        return mCaller.getInvoker().getStringParser();
+        return mCaller.getClient().getStringParser();
     }
 
     @Override
     public IFailure.Factory getFailureFactory() {
-        return mCaller.getInvoker().getFailureFactory();
+        return mCaller.getClient().getFailureFactory();
     }
 
     @Override
-    public ISource parseSource(IResponse response) {
+    public ISource parseSource(ContentResponse response) {
         Class<?> sourceType = getMethodVisitor().getSourceType();
         if (sourceType == null) {
-            sourceType = getSourceFactory().create();
+            sourceType = getSourceFactory().getSourceType();
         }
-        return getDataParser().parse(response.getContent(), sourceType);
+        return getDataParser().parse(response.getHttpContent(), sourceType);
     }
 
     @Override
@@ -80,10 +80,10 @@ public abstract class AbstractCall<Data> implements Call<Data> {
     }
 
     protected final void executeSuccess(Callback<?, ?> c, SuccessResult<?> result) {
-        mCaller.getInvoker().getResultExecutor().executeSuccess(c, result);
+        mCaller.getClient().getResultExecutor().executeSuccess(c, result);
     }
 
     protected final void executeFailure(Callback<?, ?> c, FailureResult<?> result) {
-        mCaller.getInvoker().getResultExecutor().executeFailure(c, result);
+        mCaller.getClient().getResultExecutor().executeFailure(c, result);
     }
 }

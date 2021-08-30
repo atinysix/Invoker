@@ -25,8 +25,8 @@ public class StandardCaller<Data> implements Caller<Data> {
     }
 
     @Override
-    public Invoker getInvoker() {
-        return mVisitor.getInvoker();
+    public Invoker getClient() {
+        return mVisitor.getClient();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StandardCaller<Data> implements Caller<Data> {
     public final Call<Data> newCall() {
         Call.CallFactory factory = getMethodVisitor().getCallFactory();
         if (factory == null) {
-            factory = getInvoker().getCallFactory();
+            factory = getClient().getCallFactory();
         }
         mCall = (Call<Data>) factory.newCall(this);
         return mCall;
@@ -71,7 +71,7 @@ public class StandardCaller<Data> implements Caller<Data> {
     @Override
     public final <F extends IFailure> void call(Context context, Callback<Data, F> callback) {
         if (context != null && callback != null) {
-            mLifecycleOwner = getInvoker().getLifecycleOwnerManager().findOrCreate(context);
+            mLifecycleOwner = getClient().getLifecycleOwnerManager().findOrCreate(context);
             if (mLifecycleOwner != null) {
                 mLifecycleOwner.bind(this);
             }
@@ -85,7 +85,7 @@ public class StandardCaller<Data> implements Caller<Data> {
     @Override
     public final <F extends IFailure> void call(Fragment fragment, Callback<Data, F> callback) {
         if (fragment != null && callback != null) {
-            mLifecycleOwner = getInvoker().getLifecycleOwnerManager().findOrCreate(fragment);
+            mLifecycleOwner = getClient().getLifecycleOwnerManager().findOrCreate(fragment);
             if (mLifecycleOwner != null) {
                 mLifecycleOwner.bind(this);
             }

@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.daiwj.invoker.runtime.InvokerLog;
+import com.daiwj.invoker.runtime.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +67,7 @@ public final class LifecycleOwnerManager {
 
     @Deprecated
     public ILifecycleOwner findOrCreate(Activity activity) {
-        InvokerLog.e(TAG, "Activity is deprecated, please use FragmentActivity instead!");
+        Logger.e(TAG, "Activity is deprecated, please use FragmentActivity instead!");
         if (activity == null) {
             return null;
         }

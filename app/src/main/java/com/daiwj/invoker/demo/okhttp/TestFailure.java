@@ -19,7 +19,6 @@ public class TestFailure implements IFailure {
         this.mCode = code;
     }
 
-    @Override
     public String getMessage() {
         return mMessage == null ? "" : mMessage;
     }

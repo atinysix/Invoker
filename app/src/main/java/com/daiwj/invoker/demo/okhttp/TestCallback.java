@@ -26,7 +26,7 @@ public class TestCallback<Data> implements Callback<Data, TestFailure> {
             if ("302".equals(result.getFailure().getCode())) {
                 mInterceptor.intercept(this, result);
             } else {
-                onFail(failure);
+                onFailure(failure);
             }
         }
     }
@@ -42,7 +42,7 @@ public class TestCallback<Data> implements Callback<Data, TestFailure> {
     /**
      * 业务失败
      */
-    public void onFail(TestFailure failure) {
+    public void onFailure(TestFailure failure) {
 
     }
 

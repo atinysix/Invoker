@@ -30,13 +30,14 @@ public class TestActivity extends Activity {
                         .asDynamic()
                         .addHeader("TestHeader", "TestValue")
                         .call(getActivity(), new TestCallback<String>() {
+
                             @Override
                             public void onSuccess(SuccessResult<String> result) {
                                 toast(result.getData());
                             }
 
                             @Override
-                            public void onFail(TestFailure failure) {
+                            public void onFailure(TestFailure failure) {
                                 toast("fail: " + failure.getMessage());
                             }
 
@@ -61,7 +62,7 @@ public class TestActivity extends Activity {
                             }
 
                             @Override
-                            public void onFail(TestFailure failure) {
+                            public void onFailure(TestFailure failure) {
                                 toast("fail: " + failure.getMessage());
                             }
 
@@ -86,7 +87,7 @@ public class TestActivity extends Activity {
                             }
 
                             @Override
-                            public void onFail(TestFailure failure) {
+                            public void onFailure(TestFailure failure) {
                                 toast("fail: " + failure.getMessage());
                             }
 

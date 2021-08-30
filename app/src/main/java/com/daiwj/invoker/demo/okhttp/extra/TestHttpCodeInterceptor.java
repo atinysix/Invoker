@@ -11,7 +11,7 @@ import com.daiwj.invoker.runtime.FailureResult;
 public class TestHttpCodeInterceptor {
 
     public <Data> void intercept(TestCallback<Data> callback, FailureResult<TestFailure> result) {
-        final Caller<Data> caller = result.getCaller();
+        final Caller<Data> caller = (Caller<Data>) result.getCaller();
         caller.call(callback);
     }
 

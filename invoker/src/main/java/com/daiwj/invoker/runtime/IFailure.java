@@ -9,8 +9,6 @@ public interface IFailure {
 
     interface Factory {
 
-        IFailure create(String message);
-
         IFailure create(ISource source);
 
     }

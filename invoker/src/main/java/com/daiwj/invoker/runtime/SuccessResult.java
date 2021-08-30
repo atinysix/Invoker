@@ -12,6 +12,16 @@ public class SuccessResult<Data> extends Result {
         mData = data;
     }
 
+    public SuccessResult(Caller<?> caller, Data data) {
+        super(caller);
+        mData = data;
+    }
+
+    public SuccessResult(Caller<?> caller, ContentResponse response, Data data) {
+        super(caller, response);
+        mData = data;
+    }
+
     public Data getData() {
         return mData;
     }

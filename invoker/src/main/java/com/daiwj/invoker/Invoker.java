@@ -4,21 +4,21 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.daiwj.invoker.annotation.Provider;
+import com.daiwj.invoker.annotation.InvokerProvider;
 import com.daiwj.invoker.call.okhttp3.OkHttpCallFactory;
 import com.daiwj.invoker.call.okhttp3.OkHttpFailureFactory;
 import com.daiwj.invoker.lifecycle.LifecycleOwnerManager;
 import com.daiwj.invoker.parser.GsonParserFactory;
 import com.daiwj.invoker.runtime.Call;
-import com.daiwj.invoker.runtime.ResultExecutor;
 import com.daiwj.invoker.runtime.DataParser;
-import com.daiwj.invoker.runtime.InvokerFactory;
-import com.daiwj.invoker.runtime.InvokerLog;
-import com.daiwj.invoker.runtime.InvokerUtil;
 import com.daiwj.invoker.runtime.IFailure;
+import com.daiwj.invoker.runtime.ISource;
+import com.daiwj.invoker.runtime.InvokerFactory;
+import com.daiwj.invoker.runtime.Utils;
+import com.daiwj.invoker.runtime.Logger;
 import com.daiwj.invoker.runtime.MethodVisitor;
 import com.daiwj.invoker.runtime.ParserFactory;
-import com.daiwj.invoker.runtime.ISource;
+import com.daiwj.invoker.runtime.ResultExecutor;
 import com.daiwj.invoker.runtime.SourceFactory;
 import com.daiwj.invoker.runtime.StringParser;
 import com.daiwj.invoker.runtime.UiThreadResultExecutor;
@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * author: daiwj on 2020/12/2 21:43
@@ -38,7 +37,7 @@ public final class Invoker {
 
     private boolean mDebug;
 
-    private final Map<Method, MethodVisitor<?>> mMethodCache = new ConcurrentHashMap<>();
+    private final Map<Method, MethodVisitor<?>> mMethodCache = new HashMap<>();
 
     private String mBaseUrl;
     private Call.CallFactory mCallFactory;
@@ -54,7 +53,7 @@ public final class Invoker {
 
     public static <T> T invoke(Class<T> c) {
         if (!c.isInterface()) {
-            InvokerUtil.error("Cannot provide invoker api for a class type: " + c.getName());
+            Utils.error("Cannot provide invoker api for a class type: " + c.getName());
         }
         return (T) ApiProvider.provide(c);
     }
@@ -81,7 +80,7 @@ public final class Invoker {
         mStringParser = builder.mParserFactory.stringParser();
         mFailureFactory = builder.mFailureFactory;
 
-        InvokerLog.setDebug(mDebug);
+        Logger.setDebug(mDebug);
     }
 
     public boolean isDebug() {
@@ -178,16 +177,16 @@ public final class Invoker {
         return visitor;
     }
 
-    private static class ApiProvider {
+    private static class ApiProvider<Api> {
 
         final static Map<String, Invoker> mFactoryMap = new HashMap<>();
         final static Map<String, Object> mApiMap = new HashMap<>();
 
         static <Api> Api provide(Class<Api> c) {
-            final Provider provider = c.getAnnotation(Provider.class);
-            InvokerUtil.checkNull(provider, "@Provider not found on class: " + c.getName());
+            final InvokerProvider provider = c.getAnnotation(InvokerProvider.class);
+            Utils.checkNull(provider, "@Provider not found on class: " + c.getName());
 
-            final Class<? extends InvokerFactory> providerClass = provider.value();
+            final Class<? extends InvokerFactory> factoryClass = provider.value();
 
             String apiName = provider.name();
             if (TextUtils.isEmpty(apiName)) {
@@ -195,8 +194,10 @@ public final class Invoker {
             }
             Object api = mApiMap.get(apiName);
             if (api == null) {
-                api = create(c, providerClass);
-                mApiMap.put(apiName, api);
+                api = create(c, factoryClass);
+                if (api != null) {
+                    mApiMap.put(apiName, api);
+                }
             }
             return (Api) api;
         }

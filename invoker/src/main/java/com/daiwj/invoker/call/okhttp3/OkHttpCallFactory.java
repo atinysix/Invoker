@@ -13,9 +13,9 @@ public class OkHttpCallFactory implements Call.CallFactory {
     private OkHttpClient mClient;
 
     public OkHttpCallFactory() {
-        mClient = createClient();
+        mClient = createOkHttpClient();
         if (mClient == null) {
-            mClient = defaultClient();
+            mClient = defaultOkHttpClient();
         }
     }
 
@@ -23,11 +23,11 @@ public class OkHttpCallFactory implements Call.CallFactory {
         mClient = client;
     }
 
-    protected OkHttpClient createClient() {
-        return defaultClient();
+    protected OkHttpClient createOkHttpClient() {
+        return defaultOkHttpClient();
     }
 
-    private OkHttpClient defaultClient() {
+    private OkHttpClient defaultOkHttpClient() {
         return new OkHttpClient.Builder().build();
     }
 

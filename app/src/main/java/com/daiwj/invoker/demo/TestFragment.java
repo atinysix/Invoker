@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.daiwj.invoker.Invoker;
 import com.daiwj.invoker.demo.okhttp.TestCallback;
+import com.daiwj.invoker.demo.okhttp.TestFailure;
 import com.daiwj.invoker.runtime.SuccessResult;
 
 import java.util.List;

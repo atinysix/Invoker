@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 /**
  * author: daiwj on 2020/12/4 11:27
  */
-public class InvokerUtil {
+public class Utils {
 
     public static <T> void checkNull(T o, String message) {
         if (o == null) {

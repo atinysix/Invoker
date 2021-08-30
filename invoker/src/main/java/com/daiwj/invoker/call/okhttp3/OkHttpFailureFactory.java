@@ -22,17 +22,6 @@ public interface OkHttpFailureFactory extends IFailure.Factory {
         }
 
         @Override
-        public IFailure create(String message) {
-            return new IFailure() {
-
-                @Override
-                public String getMessage() {
-                    return message;
-                }
-            };
-        }
-
-        @Override
         public IFailure create(ISource source) {
             return new IFailure() {
 

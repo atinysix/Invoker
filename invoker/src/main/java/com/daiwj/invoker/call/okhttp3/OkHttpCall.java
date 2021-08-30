@@ -4,12 +4,12 @@ import com.daiwj.invoker.runtime.AbstractCall;
 import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.Caller;
+import com.daiwj.invoker.runtime.ContentResponse;
 import com.daiwj.invoker.runtime.FailureResult;
 import com.daiwj.invoker.runtime.FilePart;
-import com.daiwj.invoker.runtime.IResponse;
 import com.daiwj.invoker.runtime.ISource;
-import com.daiwj.invoker.runtime.InvokerLog;
-import com.daiwj.invoker.runtime.InvokerUtil;
+import com.daiwj.invoker.runtime.Logger;
+import com.daiwj.invoker.runtime.Utils;
 import com.daiwj.invoker.runtime.MethodVisitor;
 import com.daiwj.invoker.runtime.RequestParam;
 import com.daiwj.invoker.runtime.Result;
@@ -49,7 +49,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
     public final void call(Callback<Data, ?> callback) {
         final Caller<Data> caller = getCaller();
 
-        final Request resolved = onResolveOriginRequest(makeOriginRequest());
+        final Request resolved = onRequestCreated(createRequest());
         mCall = mOkHttpClient.newCall(resolved);
         mCall.enqueue(new okhttp3.Callback() {
 
@@ -60,7 +60,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 if (callback == null) return;
 
                 if (isCanceled()) {
-                    InvokerLog.w("OkHttpCall", "call " + getCaller().getTag() + " is canceled");
+                    Logger.w("OkHttpCall", "call " + getCaller().getTag() + " is canceled");
                     return;
                 }
 
@@ -74,18 +74,17 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 if (callback == null) return;
 
                 if (isCanceled()) {
-                    InvokerLog.w("OkHttpCall", "call " + getCaller().getTag() + " is canceled");
+                    Logger.w("OkHttpCall", "call " + getCaller().getTag() + " is canceled");
                     return;
                 }
 
                 final Result origin = new Result(caller);
-                final IResponse wrapper;
-                if (caller.getInvoker().isDebug()) {
-                    wrapper = new OkHttpResponse(response, caller.getMocker());
+                final ContentResponse wrapper;
+                if (caller.getClient().isDebug()) {
+                    wrapper = new OkContentResponse(response, caller.getMocker());
                 } else {
-                    wrapper = new OkHttpResponse(response);
+                    wrapper = new OkContentResponse(response);
                 }
-                origin.setResponse(wrapper);
 
                 final ISource source = parseSource(wrapper);
 
@@ -95,7 +94,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                     if (sourceCaller.isDataOnly()) {
                         data = source.data();
                     } else {
-                        data = wrapper.getContent();
+                        data = wrapper.getHttpContent();
                     }
                     executeSuccess(callback, new SuccessResult<>(origin, data));
                 } else {
@@ -115,28 +114,26 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
         final Caller<Data> caller = getCaller();
 
         try {
-            final Request resolved = onResolveOriginRequest(makeOriginRequest());
+            final Request resolved = onRequestCreated(createRequest());
             mCall = mOkHttpClient.newCall(resolved);
             final Response response = mCall.execute();
 
-            final Result origin = new Result(caller);
-            final IResponse wrapper;
-            if (caller.getInvoker().isDebug()) {
-                wrapper = new OkHttpResponse(response, caller.getMocker());
+            final OkContentResponse wrapper;
+            if (caller.getClient().isDebug()) {
+                wrapper = new OkContentResponse(response, caller.getMocker());
             } else {
-                wrapper = new OkHttpResponse(response);
+                wrapper = new OkContentResponse(response);
             }
-            origin.setResponse(wrapper);
+            final Result origin = new Result(caller, wrapper);
 
             final ISource source = parseSource(wrapper);
-
             if (caller instanceof SourceCaller) {
                 final String data;
                 final SourceCaller sourceCaller = (SourceCaller) caller;
                 if (sourceCaller.isDataOnly()) {
                     data = source.data();
                 } else {
-                    data = wrapper.getContent();
+                    data = wrapper.getHttpContent();
                 }
                 return new SuccessResult<Data>(origin, (Data) data);
             } else {
@@ -154,7 +151,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
         }
     }
 
-    private Request makeOriginRequest() {
+    private Request createRequest() {
         final MethodVisitor<Data> visitor = getMethodVisitor();
         final String httpMethod = visitor.getHttpMethod();
         final boolean isJsonBody = visitor.isJsonBody();
@@ -163,7 +160,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
 
         final Request.Builder requestBuilder = new Request.Builder();
 
-        String clientBaseUrl = visitor.getInvoker().getBaseUrl();
+        String clientBaseUrl = visitor.getClient().getBaseUrl();
         String methodBaseUrl = visitor.getBaseUrl();
         String relativeUrl = visitor.getRelativeUrl();
 
@@ -174,12 +171,12 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
             url = HttpUrl.parse(baseUrl);
         }
         if (url == null) {
-            InvokerUtil.error("Cannot resolve the base url: " + baseUrl);
+            Utils.error("Cannot resolve the base url: " + baseUrl);
         }
 
         HttpUrl.Builder urlBuilder = url.newBuilder(relativeUrl);
         if (urlBuilder == null) {
-            InvokerUtil.error("Cannot resolve the relative url: " + relativeUrl);
+            Utils.error("Cannot resolve the relative url: " + relativeUrl);
         }
 
         if (headers != null) {
@@ -248,7 +245,7 @@ public class OkHttpCall<Data> extends AbstractCall<Data> {
                 .build();
     }
 
-    protected Request onResolveOriginRequest(Request origin) {
+    protected Request onRequestCreated(Request origin) {
         return origin;
     }
 

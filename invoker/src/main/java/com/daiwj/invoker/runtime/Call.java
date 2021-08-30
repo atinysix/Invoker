@@ -27,7 +27,7 @@ public interface Call<Data> {
 
     IFailure.Factory getFailureFactory();
 
-    ISource parseSource(IResponse response);
+    ISource parseSource(ContentResponse response);
 
     Data parseData(ISource source);
 

@@ -11,7 +11,7 @@ import com.daiwj.invoker.Invoker;
  */
 public interface Caller<Data> {
 
-    Invoker getInvoker();
+    Invoker getClient();
 
     MethodVisitor<Data> getMethodVisitor();
 

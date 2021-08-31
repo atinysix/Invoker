@@ -4,7 +4,6 @@ import com.daiwj.invoker.runtime.AbstractCall;
 import com.daiwj.invoker.runtime.CallException;
 import com.daiwj.invoker.runtime.Callback;
 import com.daiwj.invoker.runtime.Caller;
-import com.daiwj.invoker.runtime.ContentResponse;
 import com.daiwj.invoker.runtime.FailureResult;
 import com.daiwj.invoker.runtime.FilePart;
 import com.daiwj.invoker.runtime.ISource;

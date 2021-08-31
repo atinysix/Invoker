@@ -29,14 +29,21 @@ public final class ActivityLifecycleOwner extends AbstractLifecycleOwner {
         private ILifecycleOwner mLifecycleOwner;
 
         public ActivityLifecycle(Activity activity) {
-            final LifecycleFragment fragment = new LifecycleFragment();
-            fragment.setLifecycle(this);
-
             final FragmentManager fm = activity.getFragmentManager();
-            fm.beginTransaction()
-                    .add(fragment, LifecycleFragment.TAG)
-                    .commitAllowingStateLoss();
-            fm.executePendingTransactions();
+            Fragment fragment = fm.findFragmentByTag(LifecycleFragment.TAG);
+            if (fragment == null) {
+                fragment = new LifecycleFragment();
+                ((LifecycleFragment) fragment).setLifecycle(this);
+                fm.beginTransaction()
+                        .add(fragment, LifecycleFragment.TAG)
+                        .commitAllowingStateLoss();
+                fm.executePendingTransactions();
+            } else if (!fragment.isAdded()){
+                fm.beginTransaction()
+                        .add(fragment, LifecycleFragment.TAG)
+                        .commitAllowingStateLoss();
+                fm.executePendingTransactions();
+            }
         }
 
         @Override
@@ -50,22 +57,23 @@ public final class ActivityLifecycleOwner extends AbstractLifecycleOwner {
             mLifecycleOwner = null;
         }
 
-        public static class LifecycleFragment extends Fragment {
+    }
 
-            protected static final String TAG = "Invoker-LifecycleFragment";
+    public static final class LifecycleFragment extends Fragment {
 
-            private ILifecycle mLifecycle;
+        protected static final String TAG = "Invoker-LifecycleFragment";
 
-            public void setLifecycle(ILifecycle lifecycle) {
-                mLifecycle = lifecycle;
-            }
+        private ILifecycle mLifecycle;
 
-            @Override
-            public void onDestroy() {
-                super.onDestroy();
+        public void setLifecycle(ILifecycle lifecycle) {
+            mLifecycle = lifecycle;
+        }
 
-                mLifecycle.onDestroy();
-            }
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+
+            mLifecycle.onDestroy();
         }
     }
 

@@ -3,15 +3,15 @@ package com.daiwj.invoker.runtime;
 /**
  * author: daiwj on 1/16/21 21:23
  */
-public class Result implements ResponseAccess {
+public class Result implements CommonResponse {
     private Caller<?> mCaller;
-    private ResponseAccess mResponse;
+    private CommonResponse mResponse;
 
     public Result(Caller<?> caller) {
         mCaller = caller;
     }
 
-    public Result(Caller<?> caller, ResponseAccess response) {
+    public Result(Caller<?> caller, CommonResponse response) {
         mCaller = caller;
         mResponse = response;
     }

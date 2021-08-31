@@ -20,10 +20,10 @@ public final class LifecycleOwnerManager {
 
     public static final String TAG = LifecycleOwnerManager.class.getSimpleName();
 
-    private final List<ILifecycleOwner> mList = new LinkedList<>();
+    private final List<ILifecycleOwner> mOwners = new LinkedList<>();
 
     public ILifecycleOwner find(String ownerName) {
-        for (ILifecycleOwner owner : mList) {
+        for (ILifecycleOwner owner : mOwners) {
             if (TextUtils.equals(owner.getName(), ownerName)) {
                 return owner;
             }
@@ -33,12 +33,12 @@ public final class LifecycleOwnerManager {
 
     public void add(ILifecycleOwner owner) {
         if (owner != null) {
-            mList.add(owner);
+            mOwners.add(owner);
         }
     }
 
     public void remove(ILifecycleOwner owner) {
-        mList.remove(owner);
+        mOwners.remove(owner);
     }
 
     public ILifecycleOwner findOrCreate(Context context) {
